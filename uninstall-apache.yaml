@@ -1,9 +1,10 @@
 ---
-- name: Uninstall Apache2
-  apt: name=apache2 state=absent purge=yes autoremove=yes
+- name: Server 2
+  hosts: all
+  become: yes
+  tasks:
+    - name: Uninstall Apache2
+      apt: name=apache2 state=absent purge=yes autoremove=yes
 
-- name: hapus file
-  shell: sudo rm -rf /etc/apache2 && rm -rf /var/log/apache2 && rm -rf /var/www/html
-
-#- name: Uninstall Apache2
-#  shell: poweroff
+    - name: hapus file
+      shell: sudo rm -rf /etc/apache2 && rm -rf /var/log/apache2 && rm -rf /var/www/html
