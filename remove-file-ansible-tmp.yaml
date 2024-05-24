@@ -1,0 +1,18 @@
+---
+- name: Server 2
+  hosts: all
+  become: yes
+  tasks:
+    - name: Hapus Cache
+      shell: sudo apt-get clean
+
+    - name: Hapus 
+      shell: rm -rf /var/log/btmp
+
+    - name: Hapus 
+      shell: rm -rf /var/log/apache2
+
+    - name: Hapus 
+      shell: rm -rf /var/log/apache2
+    
+    
