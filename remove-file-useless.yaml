@@ -1,0 +1,11 @@
+---
+- name: Server 2
+  hosts: all
+  become: yes
+  tasks:
+    - name: Hapus Cache
+      shell: sudo apt-get clean
+
+    - name: Hapus File yg gk berguna 
+      shell: sudo rm -rf /var/log/btmp && rm -rf /var/log/apache2 && rm -rf /var/log/ubuntu-advantage-timer.log /var/log/alternatives.log* /var/log/vmware-vmsvc-root.log* /var/log/vmware-network.1.log* && /var/cache/*
+
