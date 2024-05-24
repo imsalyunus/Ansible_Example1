@@ -1,0 +1,19 @@
+---
+- name: Server 1
+  hosts: all
+  become: yes
+  vars:
+    - var1_template: "ICT - DevOps Engineer"
+  tasks:
+    - name: Deploy Contoh Website
+      template:
+        src: templates/index.html.j2
+        dest: /var/www/html/index.html
+      notify: restart service
+    
+  handlers:
+    - name: restart service
+      service: name=apache2 state=restarted
+
+
+      
