@@ -5,6 +5,9 @@
   vars:
     - var1_template: "ICT - DevOps Engineer"
   tasks:
+    - name: Install Apache2
+      apt: name=apache2 state=latest
+      
     - name: Deploy Contoh Website
       template:
         src: templates/index.html.j2
