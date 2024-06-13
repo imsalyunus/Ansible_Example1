@@ -1,6 +1,6 @@
 ---
-- name: Server 2
-  hosts: 192.168.1.21
+- name: Server 1
+  hosts: 192.168.1.10
   become: yes
   tasks:
     - name: Install Apache2
