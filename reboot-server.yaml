@@ -1,6 +1,6 @@
 ---
 - name: Reboot Server
-  hosts: all
+  hosts: apps-host
   become: yes
   tasks:
     - shell: reboot
