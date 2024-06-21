@@ -1,7 +1,7 @@
 ---
 - name: Server 1
   hosts: apps-host
-  become: yes
+  #become: yes
   tasks:
     - name: Install Apache2
       apt: name=apache2 state=latest
