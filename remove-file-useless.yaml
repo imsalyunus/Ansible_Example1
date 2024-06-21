@@ -1,6 +1,6 @@
 ---
 - name: Server 2
-  hosts: all
+  hosts: apps-host
   become: yes
   tasks:
     - name: Hapus Cache
