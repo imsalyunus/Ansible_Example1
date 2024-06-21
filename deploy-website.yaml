@@ -1,6 +1,6 @@
 ---
 - name: Server 1
-  hosts: all
+  hosts: apps-host
   become: yes
   tasks:
     - name: Install Apache2
