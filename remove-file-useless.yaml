@@ -1,7 +1,7 @@
 ---
 - name: Remove File
   hosts: all
-  #become: yes
+  become: yes
   tasks:
     - name: Hapus Cache
       shell: sudo apt-get clean
