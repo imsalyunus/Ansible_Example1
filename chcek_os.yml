@@ -1,0 +1,36 @@
+---
+- name: Check System Information
+  hosts: all
+  become: no
+  tasks:
+    - name: Check disk usage
+      command: df -h
+      register: disk_usage
+
+    - name: Show disk usage
+      debug:
+        msg: "{{ disk_usage.stdout_lines }}"
+
+    - name: Check memory usage
+      command: free -m
+      register: memory_usage
+
+    - name: Show memory usage
+      debug:
+        msg: "{{ memory_usage.stdout_lines }}"
+
+    - name: Check system uptime
+      command: uptime
+      register: system_uptime
+
+    - name: Show system uptime
+      debug:
+        msg: "{{ system_uptime.stdout }}"
+
+    - name: Check OS version
+      command: cat /etc/os-release
+      register: os_version
+
+    - name: Show OS version
+      debug:
+        msg: "{{ os_version.stdout_lines }}"
