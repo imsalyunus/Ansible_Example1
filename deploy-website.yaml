@@ -1,7 +1,7 @@
 ---
 - name: Deploy Web Server (Apache2 - custome)
   hosts: all
-  #become: yes
+  become: yes
   tasks:
     - name: Install Apache2
       apt: name=apache2 state=latest
