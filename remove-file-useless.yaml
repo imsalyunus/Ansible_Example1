@@ -1,5 +1,5 @@
 ---
-- name: Server 2
+- name: all
   hosts: apps-host
   become: yes
   tasks:
