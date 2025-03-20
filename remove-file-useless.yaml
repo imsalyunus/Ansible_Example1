@@ -1,6 +1,6 @@
 ---
-- name: all
-  hosts: apps-host
+- name: Remove File
+  hosts: all
   #become: yes
   tasks:
     - name: Hapus Cache
