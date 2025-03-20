@@ -1,7 +1,7 @@
 ---
 - name: Uninstall Apache2
   hosts: all
-  become: yes
+  #become: yes
   tasks:
     - name: Uninstall Apache2
       apt: name=apache2 state=absent purge=yes autoremove=yes
