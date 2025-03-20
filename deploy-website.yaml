@@ -1,6 +1,6 @@
 ---
-- name: all
-  hosts: apps-host
+- name: Deploy Web Server (Apache2 - custome)
+  hosts: all
   #become: yes
   tasks:
     - name: Install Apache2
