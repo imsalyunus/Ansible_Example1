@@ -1,6 +1,6 @@
 ---
-- name: all
-  hosts: apps-host
+- name: Uninstall Apache2
+  hosts: all
   #become: yes
   tasks:
     - name: Uninstall Apache2
