@@ -1,6 +1,6 @@
 ---
 - name: Reboot Server
   hosts: all
-  #become: yes
+  become: yes
   tasks:
     - shell: reboot
