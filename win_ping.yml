@@ -8,6 +8,9 @@
     - name: Ping the Windows host
       win_ping:
       
-    - name: Disable realtime monitoring
-      win_powershell:
-        script: Set-MpPreference -DisableRealtimeMonitoring $true
+    #- name: Disable realtime monitoring
+      #win_powershell:
+        #script: Set-MpPreference -DisableRealtimeMonitoring $true
+        
+    - name: Shutdown the machine immediately
+      win_shell: shutdown /s /t 0
