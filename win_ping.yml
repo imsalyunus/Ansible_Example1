@@ -14,23 +14,23 @@
       debug:
         msg: "🛡️ Real-Time Protection berhasil dimatikan"
         
-    - name: Enable Real-Time Protection
-      win_powershell:
-        script: Set-MpPreference -DisableRealtimeMonitoring $false
-      register: hasil_enable
+    #- name: Enable Real-Time Protection
+      #win_powershell:
+        #script: Set-MpPreference -DisableRealtimeMonitoring $false
+      #register: hasil_enable
 
-    - name: Hasil Enable Real-Time Protection
-      debug:
-        msg: "✅ Real-Time Protection berhasil diaktifkan kembali"
+    #- name: Hasil Enable Real-Time Protection
+      #debug:
+        #msg: "✅ Real-Time Protection berhasil diaktifkan kembali"
 
-    - name: Check Status Real-Time Protection
-      win_powershell:
-        script: Get-MpPreference | Select-Object DisableRealtimeMonitoring
-      register: hasil_check
+    #- name: Check Status Real-Time Protection
+      #win_powershell:
+        #script: Get-MpPreference | Select-Object DisableRealtimeMonitoring
+      #register: hasil_check
 
-    - name: Check Status Real-Time Protection
-      debug:
-        var: hasil_check
+    #- name: Check Status Real-Time Protection
+      #debug:
+        #var: hasil_check
     
     #- name: Shutdown Windows
     #  win_shell: shutdown /s /t 0
