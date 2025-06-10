@@ -1,16 +1,39 @@
 ---
-- name: Test connectivity to Windows host
+- name: Automation Testing for Windows
   hosts: all
   gather_facts: no
   collections:
     - ansible.windows
   tasks:
-    - name: Ping the Windows host
-      win_ping:
-      
-    #- name: Disable realtime monitoring
-      #win_powershell:
-        #script: Set-MpPreference -DisableRealtimeMonitoring $true
+    - name: Disable Real-Time Protection
+      win_powershell:
+        script: Set-MpPreference -DisableRealtimeMonitoring $true
+      register: hasil_disable
+
+    - name: Hasil Disable Real-Time Protection
+      debug:
+        msg: "🛡️ Real-Time Protection berhasil dimatikan"
         
-    - name: Shutdown the machine immediately
-      win_shell: shutdown /s /t 0
+    - name: Enable Real-Time Protection
+      win_powershell:
+        script: Set-MpPreference -DisableRealtimeMonitoring $false
+      register: hasil_enable
+
+    - name: Hasil Enable Real-Time Protection
+      debug:
+        msg: "✅ Real-Time Protection berhasil diaktifkan kembali"
+
+    - name: Check Status Real-Time Protection
+      win_powershell:
+        script: Get-MpPreference | Select-Object DisableRealtimeMonitoring
+      register: hasil_check
+
+    - name: Check Status Real-Time Protection
+      debug:
+        msg: "🔍 Status DisableRealtimeMonitoring: {{ hasil_check.stdout_lines }}"
+    
+    #- name: Shutdown Windows
+    #  win_shell: shutdown /s /t 0
+    
+    #- name: Restart Windows
+    #  win_shell: shutdown /r /t 0
