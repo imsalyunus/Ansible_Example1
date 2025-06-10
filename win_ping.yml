@@ -30,7 +30,7 @@
 
     - name: Check Status Real-Time Protection
       debug:
-        msg: "🔍 Real-Time Protection Disabled? {{ hasil_check.stdout[0].DisableRealtimeMonitoring }}"
+        var: hasil_check
     
     #- name: Shutdown Windows
     #  win_shell: shutdown /s /t 0
