@@ -1,0 +1,16 @@
+---
+- name: Test WordPress URL
+  hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - name: Test akses WordPress
+      uri:
+        url: http://http://192.168.56.104:30254
+        return_content: yes
+        status_code: 200
+      register: result
+
+    - name: Tampilkan hasil
+      debug:
+        var: result.status
