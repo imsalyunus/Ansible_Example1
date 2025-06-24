@@ -4,56 +4,48 @@
   gather_facts: false
 
   vars:
-    wordpress_sites:
-      - name: WordPress Test
-        url: http://192.168.56.104:30149
+    wp_url: http://192.168.56.104:30149
 
   tasks:
 
-    - name: 🔁 Loop pengecekan semua WordPress
-      vars:
-        summary: ""
-      block:
-        - name: 🔍 Cek koneksi ke {{ item.name }}
-          uri:
-            url: "{{ item.url }}"
-            return_content: yes
-            timeout: 10
-          register: result
-          failed_when: false
-          loop: "{{ wordpress_sites }}"
-          loop_control:
-            label: "{{ item.name }}"
-          delegate_to: localhost
-          run_once: false
+    - name: 🔍 Cek koneksi ke WordPress
+      uri:
+        url: "{{ wp_url }}"
+        return_content: yes
+        timeout: 10
+      register: result
+      failed_when: false
 
-        - name: 🧠 Proses hasil & simpan summary
-          set_fact:
-            wp_summary: "{{ wp_summary | default([]) + [ _summary_line ] }}"
-          vars:
-            _summary_line: >-
-              🌐 {{ item.name }} ({{ item.url }}):
-              {% if 'Error establishing a database connection' in result.content %}
-              ❌ Error koneksi database.
-              {% elif 'setup-config.php' in result.content or 'Setup Configuration File' in result.content %}
-              ⚠️ WordPress belum dikonfigurasi.
-              {% elif 'WordPress' in result.content and result.status == 200 %}
-              ✅ WordPress aktif (status {{ result.status }})
-              {% else %}
-              ❓ Tidak dikenali / kemungkinan tidak aktif.
-              {% endif %}
-          loop: "{{ wordpress_sites }}"
-          loop_control:
-            label: "{{ item.name }}"
-          delegate_to: localhost
-          run_once: false
+    - name: ❗ Cek error DB
+      set_fact:
+        db_error: true
+      when: "'Error establishing a database connection' in result.content"
 
-    - name: 📨 Simpan summary ke notifikasi Ansible
-      set_stats:
-        data:
-          wp_summary: |
-            {{ wp_summary | join('\n') }}
+    - name: ✅ Buat summary email
+      set_fact:
+        email_message: |
+          Hasil Cek Website WordPress:
+          
+          URL: {{ wp_url }}
+          Status: {{ result.status }}
+          Waktu Respons: {{ result.elapsed }} detik
+          
+          {% if db_error is defined and db_error %}
+          ⚠️ Terjadi error koneksi database!
+          {% elif 'WordPress' in result.content %}
+          ✅ WordPress tampil normal.
+          {% else %}
+          ❓ Halaman tidak dikenali atau kosong.
+          {% endif %}
 
-    - name: 🔍 Tampilkan summary di log
-      debug:
-        var: wp_summary | join('\n')
+    - name: 📤 Kirim hasil cek ke email
+      community.general.mail:
+        host: smtp.gmail.com
+        port: 587
+        username: yunusimsal@gmail.com
+        password: "{{ lookup('env', 'GMAIL_APP_PASS') }}"
+        to: yunusimsal@gmail.com
+        subject: "🔔 Hasil Cek WordPress {{ ansible_date_time.iso8601 }}"
+        body: "{{ email_message }}"
+        subtype: plain
+        secure: starttls
