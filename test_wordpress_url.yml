@@ -26,7 +26,7 @@
       set_fact:
         wp_status_messages: "{{ wp_status_messages | default([]) + [msg] }}"
       vars:
-        status_code: "{{ result.results[item_index].status }}"
+        status_code: "{{ result.results[item_index].status | int }}"
         site: "{{ wordpress_sites[item_index] }}"
         msg: >-
           {% if status_code == 200 %}
