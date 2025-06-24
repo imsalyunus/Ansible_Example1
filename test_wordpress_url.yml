@@ -14,3 +14,8 @@
     - name: Tampilkan hasil
       debug:
         var: result.status
+
+     - name: Periksa isi halaman
+       debug:
+         msg: "Berhasil akses WordPress!" 
+       when: "'WordPress' in result.content"
