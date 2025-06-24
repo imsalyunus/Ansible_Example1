@@ -10,7 +10,7 @@
 
   tasks:
 
-    - name: 🔍 Cek koneksi ke setiap website WordPress
+    - name: Cek koneksi ke setiap website WordPress
       uri:
         url: "{{ item.url }}"
         return_content: no
@@ -26,7 +26,7 @@
       set_fact:
         wp_status_messages: "{{ wp_status_messages | default([]) + [msg] }}"
       vars:
-        status_code: "{{ result.results[item_index].status | int }}"
+        status_code: "{{ (result.results[item_index].status | default(0)) | int }}"
         site: "{{ wordpress_sites[item_index] }}"
         msg: >-
           {% if status_code == 200 %}
@@ -46,6 +46,6 @@
       loop_control:
         loop_var: item_index
 
-    - name: Tampilkan ringkasan status
+    - name: Tampilkan ringkasan status semua website
       debug:
-        msg: "{{ wp_status_messages | join('\n') }}"
+        msg: "{{ wp_status_messages }}"
