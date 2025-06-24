@@ -22,50 +22,30 @@
 
     - name: 🌐 Tampilkan status HTTP setiap WordPress site
       debug:
-        msg: "Status code {{ item_result.status }} untuk {{ item.url }}"
-      loop: "{{ wordpress_sites }}"
-      loop_control:
-        label: "{{ item.name }}"
-      vars:
-        item_result: "{{ result.results[loop.index0] }}"
+        msg: "Status code {{ item.1.status }} untuk {{ item.0.url }}"
+      with_indexed_items: "{{ wordpress_sites }}"
 
     - name: ❗ Deteksi error koneksi database
       debug:
-        msg: "❗ [{{ item.name }}] Error: Tidak bisa konek ke database!"
-      when: "'Error establishing a database connection' in item_result.content"
-      loop: "{{ wordpress_sites }}"
-      loop_control:
-        label: "{{ item.name }}"
-      vars:
-        item_result: "{{ result.results[loop.index0] }}"
+        msg: "❗ [{{ item.0.name }}] Error: Tidak bisa konek ke database!"
+      when: "'Error establishing a database connection' in item.1.content"
+      with_indexed_items: "{{ wordpress_sites }}"
 
     - name: ⚠️ Deteksi halaman setup WordPress
       debug:
-        msg: "⚠️ [{{ item.name }}] WordPress belum dikonfigurasi (setup-config.php)"
-      when: "'setup-config.php' in item_result.content or 'Setup Configuration File' in item_result.content"
-      loop: "{{ wordpress_sites }}"
-      loop_control:
-        label: "{{ item.name }}"
-      vars:
-        item_result: "{{ result.results[loop.index0] }}"
+        msg: "⚠️ [{{ item.0.name }}] WordPress belum dikonfigurasi (setup-config.php)"
+      when: "'setup-config.php' in item.1.content or 'Setup Configuration File' in item.1.content"
+      with_indexed_items: "{{ wordpress_sites }}"
 
     - name: ✅ Halaman WordPress tampil normal
       debug:
-        msg: "✅ [{{ item.name }}] WordPress aktif & halaman tampil normal!"
-      when: "'WordPress' in item_result.content and item_result.status == 200"
-      loop: "{{ wordpress_sites }}"
-      loop_control:
-        label: "{{ item.name }}"
-      vars:
-        item_result: "{{ result.results[loop.index0] }}"
+        msg: "✅ [{{ item.0.name }}] WordPress aktif & halaman tampil normal!"
+      when: "'WordPress' in item.1.content and item.1.status == 200"
+      with_indexed_items: "{{ wordpress_sites }}"
 
     - name: 📝 Preview isi halaman
       debug:
         msg: |
-          📝 [{{ item.name }}] Cuplikan konten:
-          {{ item_result.content | regex_replace('\\s+', ' ') | truncate(250, True) }}
-      loop: "{{ wordpress_sites }}"
-      loop_control:
-        label: "{{ item.name }}"
-      vars:
-        item_result: "{{ result.results[loop.index0] }}"
+          📝 [{{ item.0.name }}] Cuplikan konten:
+          {{ item.1.content | regex_replace('\\s+', ' ') | truncate(250, True) }}
+      with_indexed_items: "{{ wordpress_sites }}"
