@@ -1,21 +1,73 @@
 ---
-- name: Test WordPress URL
+- name: Cek kesehatan semua website WordPress
   hosts: localhost
   gather_facts: false
 
-  tasks:
-    - name: Test akses WordPress
-      uri:
+  vars:
+    wordpress_sites:
+      - name: WordPress Test
         url: http://192.168.56.104:30149
-        return_content: yes
-        status_code: 200
-      register: result
 
-    - name: Tampilkan hasil
-      debug:
-        var: result.status
+  tasks:
 
-    - name: Periksa isi halaman
-      debug:
-        msg: "Berhasil akses WordPress!"
-      when: "'WordPress' in result.content"
+    - name: Loop per website WordPress
+      block:
+
+        - name: 🔍 Cek koneksi ke {{ item.name }}
+          uri:
+            url: "{{ item.url }}"
+            return_content: yes
+            timeout: 10
+          register: result
+          failed_when: false
+          loop: "{{ wordpress_sites }}"
+          loop_control:
+            label: "{{ item.name }}"
+
+        - name: 🌐 Tampilkan status HTTP {{ item.name }}
+          debug:
+            msg: "Status code {{ result.status }} untuk {{ item.url }}"
+          loop: "{{ wordpress_sites }}"
+          loop_control:
+            label: "{{ item.name }}"
+
+        - name: ❗ Deteksi error koneksi database
+          debug:
+            msg: "❗ [{{ item.name }}] Error: Tidak bisa konek ke database!"
+          when: "'Error establishing a database connection' in result.content"
+          loop: "{{ wordpress_sites }}"
+          loop_control:
+            label: "{{ item.name }}"
+
+        - name: ⚠️ Deteksi halaman setup WordPress
+          debug:
+            msg: "⚠️ [{{ item.name }}] WordPress belum dikonfigurasi (setup-config.php)"
+          when: "'setup-config.php' in result.content or 'Setup Configuration File' in result.content"
+          loop: "{{ wordpress_sites }}"
+          loop_control:
+            label: "{{ item.name }}"
+
+        - name: ✅ Halaman WordPress tampil normal
+          debug:
+            msg: "✅ [{{ item.name }}] WordPress aktif & halaman tampil normal!"
+          when: "'WordPress' in result.content and result.status == 200"
+          loop: "{{ wordpress_sites }}"
+          loop_control:
+            label: "{{ item.name }}"
+
+        - name: 📝 Preview isi halaman
+          debug:
+            msg: |
+              📝 [{{ item.name }}] Cuplikan konten:
+              {{ result.content | regex_replace('\\s+', ' ') | truncate(250, True) }}
+          loop: "{{ wordpress_sites }}"
+          loop_control:
+            label: "{{ item.name }}"
+
+      rescue:
+        - name: ❌ Tidak bisa konek ke {{ item.name }}
+          debug:
+            msg: "❌ [{{ item.name }}] Tidak dapat mengakses {{ item.url }} (kemungkinan DNS/IP down)"
+          loop: "{{ wordpress_sites }}"
+          loop_control:
+            label: "{{ item.name }}"
