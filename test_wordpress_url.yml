@@ -14,7 +14,7 @@
         url: "{{ item.url }}"
         return_content: no
         timeout: 10
-        status_code: 200,301,302,403,404,500,502,503  # status yang diharapkan selain 200 juga diterima
+        status_code: 200,301,302,403,404,500,502,503
       register: result
       failed_when: false
       loop: "{{ wordpress_sites }}"
@@ -22,28 +22,28 @@
         label: "{{ item.name }}"
 
     - name: 🌐 Tampilkan status code dan pesan sesuai hasil pengecekan
-      vars:
-        site: "{{ wordpress_sites[ansible_loop.index0] }}"
-        res: "{{ result.results[ansible_loop.index0] }}"
       debug:
         msg: |
-          Site: {{ site.name }}
-          URL: {{ site.url }}
-          Status HTTP: {{ res.status }}
+          Site: {{ wordpress_sites[item_index].name }}
+          URL: {{ wordpress_sites[item_index].url }}
+          Status HTTP: {{ result.results[item_index].status }}
 
-          {% if res.status == 200 %}
+          {% set status_code = result.results[item_index].status %}
+          {% if status_code == 200 %}
           ✅ Website aktif dan berjalan normal.
-          {% elif res.status in [301, 302] %}
+          {% elif status_code in [301, 302] %}
           🔄 Website melakukan redirect.
-          {% elif res.status == 403 %}
+          {% elif status_code == 403 %}
           ⛔ Akses ditolak (Forbidden).
-          {% elif res.status == 404 %}
+          {% elif status_code == 404 %}
           ❌ Halaman tidak ditemukan (Not Found).
-          {% elif res.status >= 500 %}
+          {% elif status_code >= 500 %}
           ⚠️ Terjadi kesalahan server (Server Error).
           {% else %}
-          ⚠️ Status HTTP tidak biasa: {{ res.status }}.
+          ⚠️ Status HTTP tidak biasa: {{ status_code }}.
           {% endif %}
-      loop: "{{ wordpress_sites }}"
+      loop: "{{ range(0, wordpress_sites|length) | list }}"
       loop_control:
-        label: "{{ item.name }}"
+        label: "{{ wordpress_sites[item_index].name }}"
+      vars:
+        item_index: "{{ item }}"
