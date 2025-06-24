@@ -1,4 +1,3 @@
----
 - name: Cek kesehatan semua website WordPress
   hosts: localhost
   gather_facts: false
@@ -9,7 +8,7 @@
         url: http://192.168.56.104:30149
 
   tasks:
-    - name: 🔍 Cek koneksi ke setiap website WordPress
+    - name: Cek koneksi ke setiap website WordPress
       uri:
         url: "{{ item.url }}"
         return_content: no
@@ -21,29 +20,31 @@
       loop_control:
         label: "{{ item.name }}"
 
-    - name: 🌐 Tampilkan status code dan pesan sesuai hasil pengecekan
-      debug:
-        msg: |
-          Site: {{ wordpress_sites[item_index].name }}
-          URL: {{ wordpress_sites[item_index].url }}
-          Status HTTP: {{ result.results[item_index].status }}
-
-          {% set status_code = result.results[item_index].status %}
+    - name: Buat ringkasan status tiap website
+      set_fact:
+        wp_status_messages: "{{ wp_status_messages | default([]) + [msg] }}"
+      vars:
+        status_code: "{{ (result.results[item_index].status | default(0)) | int }}"
+        site: "{{ wordpress_sites[item_index] }}"
+        msg: >-
           {% if status_code == 200 %}
-          ✅ Website aktif dan berjalan normal.
+          ✅ Website '{{ site.name }}' aktif dan berjalan normal (Status: {{ status_code }}).
           {% elif status_code in [301, 302] %}
-          🔄 Website melakukan redirect.
+          🔄 Website '{{ site.name }}' melakukan redirect (Status: {{ status_code }}).
           {% elif status_code == 403 %}
-          ⛔ Akses ditolak (Forbidden).
+          ⛔ Website '{{ site.name }}' akses ditolak (Forbidden, Status: {{ status_code }}).
           {% elif status_code == 404 %}
-          ❌ Halaman tidak ditemukan (Not Found).
+          ❌ Website '{{ site.name }}' halaman tidak ditemukan (Not Found, Status: {{ status_code }}).
           {% elif status_code >= 500 %}
-          ⚠️ Terjadi kesalahan server (Server Error).
+          ⚠️ Website '{{ site.name }}' error server (Status: {{ status_code }}).
           {% else %}
-          ⚠️ Status HTTP tidak biasa: {{ status_code }}.
+          ⚠️ Website '{{ site.name }}' status HTTP tidak biasa: {{ status_code }}.
           {% endif %}
       loop: "{{ range(0, wordpress_sites|length) | list }}"
       loop_control:
-        label: "{{ wordpress_sites[item_index].name }}"
-      vars:
-        item_index: "{{ item }}"
+        loop_var: item_index
+
+    - name: Kirim ringkasan status ke Tower (set_stats)
+      set_stats:
+        data:
+          wp_status_messages: "{{ wp_status_messages | join('\n') }}"
