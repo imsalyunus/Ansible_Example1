@@ -1,4 +1,3 @@
----
 - name: Cek kesehatan semua website WordPress
   hosts: localhost
   gather_facts: false
@@ -9,44 +8,64 @@
         url: http://192.168.56.104:30149
 
   tasks:
-    - name: Siapkan list untuk summary hasil
-      set_fact:
-        wp_summary: []
 
-    - name: Loop pengecekan WordPress
-      block:
-        - name: 🔍 Cek koneksi ke {{ item.name }}
-          uri:
-            url: "{{ item.url }}"
-            return_content: yes
-            timeout: 10
-          register: result
-          failed_when: false
-
-        - name: 🔎 Analisis hasil dan simpan ke summary
-          set_fact:
-            wp_summary: "{{ wp_summary + [summary_line] }}"
-          vars:
-            summary_line: >-
-              🌐 {{ item.name }} ({{ item.url }}):
-              {% if 'Error establishing a database connection' in result.content %}
-              ❌ Error koneksi database.
-              {% elif 'setup-config.php' in result.content or 'Setup Configuration File' in result.content %}
-              ⚠️ Belum dikonfigurasi.
-              {% elif 'WordPress' in result.content and result.status == 200 %}
-              ✅ WordPress aktif (status {{ result.status }})
-              {% else %}
-              ❓ Tidak dikenali atau tidak aktif.
-              {% endif %}
+    - name: 🔍 Cek koneksi ke WordPress sites
+      uri:
+        url: "{{ item.url }}"
+        return_content: yes
+        timeout: 10
+      register: result
+      failed_when: false
       loop: "{{ wordpress_sites }}"
       loop_control:
         label: "{{ item.name }}"
 
-    - name: Simpan ringkasan ke notifikasi Ansible Tower
-      set_stats:
-        data:
-          wp_summary: "{{ wp_summary | join('\n') }}"
-
-    - name: Tampilkan ringkasan hasil di log
+    - name: 🌐 Tampilkan status HTTP setiap WordPress site
       debug:
-        msg: "{{ wp_summary | join('\n') }}"
+        msg: "Status code {{ item_result.status }} untuk {{ item.url }}"
+      loop: "{{ wordpress_sites }}"
+      loop_control:
+        label: "{{ item.name }}"
+      vars:
+        item_result: "{{ result.results[loop.index0] }}"
+
+    - name: ❗ Deteksi error koneksi database
+      debug:
+        msg: "❗ [{{ item.name }}] Error: Tidak bisa konek ke database!"
+      when: "'Error establishing a database connection' in item_result.content"
+      loop: "{{ wordpress_sites }}"
+      loop_control:
+        label: "{{ item.name }}"
+      vars:
+        item_result: "{{ result.results[loop.index0] }}"
+
+    - name: ⚠️ Deteksi halaman setup WordPress
+      debug:
+        msg: "⚠️ [{{ item.name }}] WordPress belum dikonfigurasi (setup-config.php)"
+      when: "'setup-config.php' in item_result.content or 'Setup Configuration File' in item_result.content"
+      loop: "{{ wordpress_sites }}"
+      loop_control:
+        label: "{{ item.name }}"
+      vars:
+        item_result: "{{ result.results[loop.index0] }}"
+
+    - name: ✅ Halaman WordPress tampil normal
+      debug:
+        msg: "✅ [{{ item.name }}] WordPress aktif & halaman tampil normal!"
+      when: "'WordPress' in item_result.content and item_result.status == 200"
+      loop: "{{ wordpress_sites }}"
+      loop_control:
+        label: "{{ item.name }}"
+      vars:
+        item_result: "{{ result.results[loop.index0] }}"
+
+    - name: 📝 Preview isi halaman
+      debug:
+        msg: |
+          📝 [{{ item.name }}] Cuplikan konten:
+          {{ item_result.content | regex_replace('\\s+', ' ') | truncate(250, True) }}
+      loop: "{{ wordpress_sites }}"
+      loop_control:
+        label: "{{ item.name }}"
+      vars:
+        item_result: "{{ result.results[loop.index0] }}"
