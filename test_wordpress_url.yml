@@ -9,65 +9,41 @@
         url: http://192.168.56.104:30149
 
   tasks:
+    - name: 🔍 Cek koneksi ke setiap website WordPress
+      uri:
+        url: "{{ item.url }}"
+        return_content: no
+        timeout: 10
+        status_code: 200,301,302,403,404,500,502,503  # status yang diharapkan selain 200 juga diterima
+      register: result
+      failed_when: false
+      loop: "{{ wordpress_sites }}"
+      loop_control:
+        label: "{{ item.name }}"
 
-    - name: Loop per website WordPress
-      block:
+    - name: 🌐 Tampilkan status code dan pesan sesuai hasil pengecekan
+      vars:
+        site: "{{ wordpress_sites[ansible_loop.index0] }}"
+        res: "{{ result.results[ansible_loop.index0] }}"
+      debug:
+        msg: |
+          Site: {{ site.name }}
+          URL: {{ site.url }}
+          Status HTTP: {{ res.status }}
 
-        - name: 🔍 Cek koneksi ke {{ item.name }}
-          uri:
-            url: "{{ item.url }}"
-            return_content: yes
-            timeout: 10
-          register: result
-          failed_when: false
-          loop: "{{ wordpress_sites }}"
-          loop_control:
-            label: "{{ item.name }}"
-
-        - name: 🌐 Tampilkan status HTTP {{ item.name }}
-          debug:
-            msg: "Status code {{ result.status }} untuk {{ item.url }}"
-          loop: "{{ wordpress_sites }}"
-          loop_control:
-            label: "{{ item.name }}"
-
-        - name: ❗ Deteksi error koneksi database
-          debug:
-            msg: "❗ [{{ item.name }}] Error: Tidak bisa konek ke database!"
-          when: "'Error establishing a database connection' in result.content"
-          loop: "{{ wordpress_sites }}"
-          loop_control:
-            label: "{{ item.name }}"
-
-        - name: ⚠️ Deteksi halaman setup WordPress
-          debug:
-            msg: "⚠️ [{{ item.name }}] WordPress belum dikonfigurasi (setup-config.php)"
-          when: "'setup-config.php' in result.content or 'Setup Configuration File' in result.content"
-          loop: "{{ wordpress_sites }}"
-          loop_control:
-            label: "{{ item.name }}"
-
-        - name: ✅ Halaman WordPress tampil normal
-          debug:
-            msg: "✅ [{{ item.name }}] WordPress aktif & halaman tampil normal!"
-          when: "'WordPress' in result.content and result.status == 200"
-          loop: "{{ wordpress_sites }}"
-          loop_control:
-            label: "{{ item.name }}"
-
-        - name: 📝 Preview isi halaman
-          debug:
-            msg: |
-              📝 [{{ item.name }}] Cuplikan konten:
-              {{ result.content | regex_replace('\\s+', ' ') | truncate(250, True) }}
-          loop: "{{ wordpress_sites }}"
-          loop_control:
-            label: "{{ item.name }}"
-
-      rescue:
-        - name: ❌ Tidak bisa konek ke {{ item.name }}
-          debug:
-            msg: "❌ [{{ item.name }}] Tidak dapat mengakses {{ item.url }} (kemungkinan DNS/IP down)"
-          loop: "{{ wordpress_sites }}"
-          loop_control:
-            label: "{{ item.name }}"
+          {% if res.status == 200 %}
+          ✅ Website aktif dan berjalan normal.
+          {% elif res.status in [301, 302] %}
+          🔄 Website melakukan redirect.
+          {% elif res.status == 403 %}
+          ⛔ Akses ditolak (Forbidden).
+          {% elif res.status == 404 %}
+          ❌ Halaman tidak ditemukan (Not Found).
+          {% elif res.status >= 500 %}
+          ⚠️ Terjadi kesalahan server (Server Error).
+          {% else %}
+          ⚠️ Status HTTP tidak biasa: {{ res.status }}.
+          {% endif %}
+      loop: "{{ wordpress_sites }}"
+      loop_control:
+        label: "{{ item.name }}"
