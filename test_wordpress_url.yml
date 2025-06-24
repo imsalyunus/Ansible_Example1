@@ -14,52 +14,40 @@
       set_fact:
         wp_summary: []
 
-    - name: Loop per website WordPress
-      block:
+    - name: 🔍 Cek koneksi ke semua website WordPress
+      uri:
+        url: "{{ item.url }}"
+        return_content: yes
+        timeout: 10
+      register: result
+      failed_when: false
+      loop: "{{ wordpress_sites }}"
+      loop_control:
+        label: "{{ item.name }}"
 
-        - name: 🔍 Cek koneksi ke {{ item.name }}
-          uri:
-            url: "{{ item.url }}"
-            return_content: yes
-            timeout: 10
-          register: result
-          failed_when: false
-          loop: "{{ wordpress_sites }}"
-          loop_control:
-            label: "{{ item.name }}"
-
-        - name: Buat ringkasan hasil cek untuk {{ item.name }}
-          set_fact:
-            wp_summary: "{{ wp_summary + [ summary_line ] }}"
-          vars:
-            summary_line: >-
-              🌐 {{ item.name }} ({{ item.url }}):
-              {% if 'Error establishing a database connection' in result.content %}
-              ❌ Error koneksi database.
-              {% elif 'setup-config.php' in result.content or 'Setup Configuration File' in result.content %}
-              ⚠️ WordPress belum dikonfigurasi.
-              {% elif 'WordPress' in result.content and result.status == 200 %}
-              ✅ WordPress aktif (status {{ result.status }})
-              {% else %}
-              ❓ Status tidak dikenali atau situs tidak aktif.
-              {% endif %}
-          loop: "{{ wordpress_sites }}"
-          loop_control:
-            label: "{{ item.name }}"
-
-      rescue:
-        - name: ❌ Tidak bisa konek ke {{ item.name }}
-          set_fact:
-            wp_summary: "{{ wp_summary + [ '❌ ' + item.name + ': Tidak dapat mengakses ' + item.url + ' (kemungkinan DNS/IP down)' ] }}"
-          loop: "{{ wordpress_sites }}"
-          loop_control:
-            label: "{{ item.name }}"
+    - name: Buat ringkasan hasil cek untuk setiap website
+      set_fact:
+        wp_summary: "{{ wp_summary + [ summary_line ] }}"
+      vars:
+        current: "{{ item }}"
+        summary_line: >-
+          🌐 {{ current.item.name }} ({{ current.item.url }}):
+          {% if 'Error establishing a database connection' in (current.content | default('')) %}
+          ❌ Error koneksi database.
+          {% elif 'setup-config.php' in (current.content | default('')) or 'Setup Configuration File' in (current.content | default('')) %}
+          ⚠️ WordPress belum dikonfigurasi.
+          {% elif ('WordPress' in (current.content | default(''))) and current.status == 200 %}
+          ✅ WordPress aktif (status {{ current.status }})
+          {% else %}
+          ❓ Status tidak dikenali atau situs tidak aktif.
+          {% endif %}
+      loop: "{{ result.results }}"
 
     - name: Tampilkan ringkasan hasil cek WordPress
       debug:
         msg: "{{ wp_summary | join('\n') }}"
 
-    - name: Kirim notifikasi email hasil cek WordPress
+    - name: Kirim notifikasi email hasil cek WordPress via curl SMTP
       shell: |
         curl --url "smtps://smtp.gmail.com:465" --ssl-reqd \
              --mail-from "yunusimsal@gmail.com" --mail-rcpt "yunusimsal@gmail.com" \
