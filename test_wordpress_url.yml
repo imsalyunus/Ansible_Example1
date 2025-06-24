@@ -1,53 +1,27 @@
----
-- name: Cek kesehatan semua website WordPress
-  hosts: localhost
-  gather_facts: false
-
+- name: Buat ringkasan status tiap website
+  set_fact:
+    wp_status_messages: "{{ wp_status_messages | default([]) + [msg] }}"
   vars:
-    wordpress_sites:
-      - name: WordPress Test
-        url: http://192.168.56.104:30149
+    status_code: "{{ result.results[item_index].status }}"
+    site: "{{ wordpress_sites[item_index] }}"
+    msg: >-
+      {% if status_code == 200 %}
+      ✅ Website '{{ site.name }}' aktif dan berjalan normal (Status: {{ status_code }}).
+      {% elif status_code in [301, 302] %}
+      🔄 Website '{{ site.name }}' melakukan redirect (Status: {{ status_code }}).
+      {% elif status_code == 403 %}
+      ⛔ Website '{{ site.name }}' akses ditolak (Forbidden, Status: {{ status_code }}).
+      {% elif status_code == 404 %}
+      ❌ Website '{{ site.name }}' halaman tidak ditemukan (Not Found, Status: {{ status_code }}).
+      {% elif status_code >= 500 %}
+      ⚠️ Website '{{ site.name }}' error server (Status: {{ status_code }}).
+      {% else %}
+      ⚠️ Website '{{ site.name }}' status HTTP tidak biasa: {{ status_code }}.
+      {% endif %}
+  loop: "{{ range(0, wordpress_sites|length) | list }}"
+  loop_control:
+    loop_var: item_index
 
-  tasks:
-    - name: 🔍 Cek koneksi ke setiap website WordPress
-      uri:
-        url: "{{ item.url }}"
-        return_content: no
-        timeout: 10
-        status_code: 200,301,302,403,404,500,502,503
-      register: result
-      failed_when: false
-      loop: "{{ wordpress_sites }}"
-      loop_control:
-        label: "{{ item.name }}"
-
-    - name: Buat ringkasan status tiap website
-      set_fact:
-        wp_check_summary: |
-          {% set messages = [] %}
-          {% for i in range(wordpress_sites|length) %}
-            {% set status_code = result.results[i].status %}
-            {% set site = wordpress_sites[i] %}
-            {% if status_code == 200 %}
-              {% set msg = "✅ Website '" ~ site.name ~ "' aktif dan berjalan normal (Status: " ~ status_code|string ~ ")." %}
-            {% elif status_code in [301, 302] %}
-              {% set msg = "🔄 Website '" ~ site.name ~ "' melakukan redirect (Status: " ~ status_code|string ~ ")." %}
-            {% elif status_code == 403 %}
-              {% set msg = "⛔ Website '" ~ site.name ~ "' akses ditolak (Forbidden, Status: " ~ status_code|string ~ ")." %}
-            {% elif status_code == 404 %}
-              {% set msg = "❌ Website '" ~ site.name ~ "' halaman tidak ditemukan (Not Found, Status: " ~ status_code|string ~ ")." %}
-            {% elif status_code >= 500 %}
-              {% set msg = "⚠️ Website '" ~ site.name ~ "' terjadi kesalahan server (Status: " ~ status_code|string ~ ")." %}
-            {% else %}
-              {% set msg = "⚠️ Website '" ~ site.name ~ "' status HTTP tidak biasa: " ~ status_code|string ~ "." %}
-            {% endif %}
-            {% do messages.append(msg) %}
-          {% endfor %}
-          {{ messages | join('\n') }}
-      run_once: true
-
-    - name: Simpan ringkasan cek ke stats (untuk akses di template notifikasi)
-      set_stats:
-        data:
-          wp_check_summary: "{{ wp_check_summary }}"
-      run_once: true
+- name: Tampilkan ringkasan status
+  debug:
+    msg: "{{ wp_status_messages | join('\n') }}"
