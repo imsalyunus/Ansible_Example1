@@ -6,7 +6,7 @@
   tasks:
     - name: Test akses WordPress
       uri:
-        url: http://192.168.56.104:30254
+        url: http://192.168.56.104:30149
         return_content: yes
         status_code: 200
       register: result
