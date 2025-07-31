@@ -14,7 +14,7 @@
         export ORACLE_HOME=/u01/app/oracle/product/19.3.0/dbhome_1
         export ORACLE_SID=orcl
         export PATH=$PATH:$ORACLE_HOME/bin
-        sqlplus -s / as sysdba <<EOF
+        sqlplus -s / as sysdba <<'EOF'
         SET HEADING OFF
         SET FEEDBACK OFF
         SELECT database_role FROM v\$database;
@@ -52,7 +52,7 @@ EOF
         export ORACLE_HOME=/u01/app/oracle/product/19.3.0/dbhome_1
         export ORACLE_SID=orcl
         export PATH=$PATH:$ORACLE_HOME/bin
-        sqlplus -s / as sysdba <<EOF
+        sqlplus -s / as sysdba <<'EOF'
         SET HEADING OFF
         SET FEEDBACK OFF
         SELECT database_role FROM v\$database;
