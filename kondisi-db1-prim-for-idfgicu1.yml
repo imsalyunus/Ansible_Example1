@@ -1,25 +1,25 @@
 ---
-- name: Cek env .IDFGCU1 Primary
+- name: Cek env .IDFGCU1
   hosts: localhost
   tasks:
-    - name: "Tampilkan data dari PRIMARY"
+    - name: "Tampilkan data dari DEV"
       debug:
-        msg: "{{ primary_db_idfgicu1 }}"
+        msg: "{{ DEV_IDFGICU1 }}"
         
-    - name: "Tampilkan data dari STANDBY"
+    - name: "Tampilkan data dari UAT"
       debug:
-        msg: "{{ standby_db_idfgicu1 }}"
+        msg: "{{ UAT_IDFGICU1 }}"
 
-    - name: "Cek apakah primary_db_idfgicu1 adalah DB1"
+    - name: "Cek apakah PRIMARY ada di DEV"
       assert:
         that:
-          - primary_db_idfgicu1 == '192.168.1.211'
-        fail_msg: "Pengecekan gagal: primary_db_idfgicu1 bukan DB1"
-        success_msg: "Pengecekan berhasil: primary_db_idfgicu1 adalah DB1"
+          - DEV_IDFGICU1 == '192.168.1.211'
+        fail_msg: "Pengecekan gagal: DEV tidak PRIMARY"
+        success_msg: "Pengecekan berhasil: DEV adalah PRIMARY"
 
-    - name: "Cek apakah standby_db_idfgicu1 adalah DB2"
+    - name: "Cek apakah UAT ada di STANDBY"
       assert:
         that:
-          - standby_db_idfgicu1 == '192.168.1.222'
-        fail_msg: "Pengecekan gagal: standby_db_idfgicu1 bukan DB2"
-        success_msg: "Pengecekan berhasil: standby_db_idfgicu1 adalah DB2"
+          - UAT_IDFGICU1 == '192.168.1.222'
+        fail_msg: "Pengecekan gagal: UAT tidak STANDBY"
+        success_msg: "Pengecekan berhasil: UAT adalah STANDBY"
