@@ -40,7 +40,7 @@
       set_stats:
         data:
           primary_db_idfgicu1: "192.168.1.211"
-      when: "'PRIMARY' in db1_role.stdout"
+      when: "'PRIMARY' in db1_role_idfgicu1.stdout"
 
     - name: Set db standby
       set_stats:
@@ -141,7 +141,7 @@
       set_stats:
         data:
           primary_db_idfgisu1: "192.168.1.211"
-      when: "'PRIMARY' in db1_role.stdout"
+      when: "'PRIMARY' in db1_role_idfgisu1.stdout"
 
     - name: Set db standby
       set_stats:
