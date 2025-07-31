@@ -24,7 +24,7 @@
   tasks:
     - name: Swing DB di ENV .IDFGISU1 (dummy)
       shell: |
-        source ~/.IDFGICU1
+        source ~/.IDFGISU1
         export ORACLE_HOME=/u01/app/oracle/product/19.3.0/dbhome_1
         export ORACLE_SID=orcl
         export PATH=$PATH:$ORACLE_HOME/bin
