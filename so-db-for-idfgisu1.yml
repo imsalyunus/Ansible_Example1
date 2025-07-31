@@ -1,0 +1,36 @@
+---
+- hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: "Tampilkan data dari STANDBY"
+      debug:
+        msg: "{{ standby_db_idfgisu1 }}"
+
+    - name: "Tampilkan data dari PRIMARY"
+      debug:
+        msg: "{{ primary_db_idfgisu1 }}"
+
+    - name: "Debug nilai primary_db_idfgisu1"
+      debug:
+        msg: "Primary DB is set to: {{ primary_db_idfgisu1 }}"
+
+    - name: "Debug nilai standby_db_idfgisu1"
+      debug:
+        msg: "Standby DB is set to: {{ standby_db_idfgisu1 }}"
+
+#################
+- hosts: "{{ primary_db_idfgisu1 }}"
+  gather_facts: no
+  tasks:
+    - name: Swing DB di ENV .IDFGISU1 (dummy)
+      shell: |
+        source ~/.IDFGICU1
+        export ORACLE_HOME=/u01/app/oracle/product/19.3.0/dbhome_1
+        export ORACLE_SID=orcl
+        export PATH=$PATH:$ORACLE_HOME/bin
+        echo "SELECT inst_id, name, value FROM gv$dataguard_stats;
+      register: db1_role
+      ignore_errors: true
+
+    - name: Display the output
+      debug: msg="{{ db1_role.stdout }}"
