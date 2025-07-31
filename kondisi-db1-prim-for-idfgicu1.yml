@@ -13,13 +13,13 @@
     - name: "Cek apakah primary_db_idfgicu1 adalah DB1"
       assert:
         that:
-          - primary_db_idfgicu1 == '192.168.1.211'
+          - primary_db_idfgicu1 == 'DB1'
         fail_msg: "Pengecekan gagal: primary_db_idfgicu1 bukan DB1"
         success_msg: "Pengecekan berhasil: primary_db_idfgicu1 adalah DB1"
 
     - name: "Cek apakah standby_db_idfgicu1 adalah DB2"
       assert:
         that:
-          - standby_db_idfgicu1 == '192.168.1.222'
+          - standby_db_idfgicu1 == 'DB2'
         fail_msg: "Pengecekan gagal: standby_db_idfgicu1 bukan DB2"
         success_msg: "Pengecekan berhasil: standby_db_idfgicu1 adalah DB2"
