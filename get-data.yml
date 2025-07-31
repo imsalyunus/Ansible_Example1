@@ -99,10 +99,10 @@
           standby_db_idfgicu1: "192.168.1.222"
       when: "'PHYSICAL STANDBY' in db2_role_idfgicu1.stdout"
 
-###########                  #################
----
+###########
 - name: Cek ROLE database untuk env profile .IDFGISU1
   hosts: 192.168.1.211
+  gather_facts: no
   tasks:
     - name: Cek role di ENV .IDFGISU1
       shell: |
@@ -150,9 +150,9 @@
       when: "'PHYSICAL STANDBY' in db1_role_idfgisu1.stdout"
 
 ###########
----
 - name: Cek ROLE database untuk env profile .IDFGISU1
   hosts: 192.168.1.222
+  gather_facts: no
   tasks:
     - name: Cek role di ENV .IDFGISU1
       shell: |
