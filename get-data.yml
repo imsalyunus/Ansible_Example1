@@ -1,5 +1,41 @@
 ---
-- name: Cek ROLE database di Env profile .IDFGISU1
+- name: Cek ROLE database untuk env profile .IDFGICU1
+  hosts: 192.168.1.211, 192.168.1.222
+  gather_facts: no
+  vars:
+    hostmap:
+      192.168.1.211: DB1
+      192.168.1.222: DB2
+
+  tasks:
+    - name: Cek role di ENV .IDFGICU1
+      shell: |
+        source ~/.IDFGICU1
+        export ORACLE_HOME=/u01/app/oracle/product/19.3.0/dbhome_1
+        export ORACLE_SID=orcl
+        export PATH=$PATH:$ORACLE_HOME/bin
+        echo "SET HEADING OFF FEEDBACK OFF; SELECT database_role FROM v\$database;" \
+        | sqlplus -s / as sysdba \
+        | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
+      register: role_cu1
+      ignore_errors: yes
+
+    - name: Simpan hasil role .IDFGICU1 ke artefak
+      set_stats:
+        data:
+          "primary_db_idfgicu1": "{{ hostmap[inventory_hostname] }}"
+      when: "'PRIMARY' in role_cu1.stdout"
+
+    - name: Simpan hasil standby .IDFGICU1 ke artefak
+      set_stats:
+        data:
+          "standby_db_idfgicu1": "{{ hostmap[inventory_hostname] }}"
+      when: "'PHYSICAL STANDBY' in role_cu1.stdout"
+
+############################
+
+---
+- name: Cek ROLE database untuk env profile .IDFGISU1
   hosts: 192.168.1.211,192.168.1.222
   gather_facts: no
   vars:
@@ -17,21 +53,18 @@
         echo "SET HEADING OFF FEEDBACK OFF; SELECT database_role FROM v\$database;" \
         | sqlplus -s / as sysdba \
         | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
-      register: db_role
-      ignore_errors: true
+      register: role_su1
+      ignore_errors: yes
 
-    - name: Tampilkan hasil database_role
-      debug:
-        msg: "Host {{ inventory_hostname }} => Role: {{ db_role.stdout }}"
-
-    - name: Set primary_db_idfgisu1 jika host adalah PRIMARY
+    - name: Simpan hasil role .IDFGISU1 ke artefak
       set_stats:
         data:
-          primary_db_idfgisu1: "{{ hostmap[inventory_hostname] }}"
-      when: "'PRIMARY' in db_role.stdout"
+          "primary_db_idfgisu1": "{{ hostmap[inventory_hostname] }}"
+      when: "'PRIMARY' in role_su1.stdout"
 
-    - name: Set standby_db_idfgisu1 jika host adalah PHYSICAL STANDBY
+    - name: Simpan hasil standby .IDFGISU1 ke artefak
       set_stats:
         data:
-          standby_db_idfgisu1: "{{ hostmap[inventory_hostname] }}"
-      when: "'PHYSICAL STANDBY' in db_role.stdout"
+          "standby_db_idfgisu1": "{{ hostmap[inventory_hostname] }}"
+      when: "'PHYSICAL STANDBY' in role_su1.stdout"
+
