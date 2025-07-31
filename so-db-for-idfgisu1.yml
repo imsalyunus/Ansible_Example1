@@ -2,26 +2,26 @@
 - hosts: localhost
   gather_facts: no
   tasks:
-    - name: "Tampilkan data dari STANDBY"
+    - name: "Tampilkan data dari UAT"
       debug:
-        msg: "{{ standby_db_idfgisu1 }}"
+        msg: "{{ UAT_IDFGISU1 }}"
 
     - name: "Tampilkan data dari PRIMARY"
       debug:
-        msg: "{{ primary_db_idfgisu1 }}"
+        msg: "{{ DEV_IDFGISU1 }}"
 
-    - name: "Debug nilai primary_db_idfgisu1"
+    - name: "Debug nilai DEV pada env .IDFGISU1"
       debug:
-        msg: "Primary DB is set to: {{ primary_db_idfgisu1 }}"
+        msg: "Primary DB is set to: {{ DEV_IDFGISU1 }}"
 
-    - name: "Debug nilai standby_db_idfgisu1"
+    - name: "Debug nilai UAT pada env .IDFGISU1"
       debug:
-        msg: "Standby DB is set to: {{ standby_db_idfgisu1 }}"
+        msg: "Standby DB is set to: {{ UAT_IDFGISU1 }}"
 
 #################
 - hosts: 
-    - "{{ standby_db_idfgicu1 }}"
-    - "{{ primary_db_idfgicu1 }}"
+    - "{{ UAT_IDFGISU1 }}"
+    - "{{ DEV_IDFGISU1 }}"
   gather_facts: no
   tasks:
     - name: Swing DB di ENV .IDFGISU1 (dummy)
