@@ -19,7 +19,9 @@
         msg: "Standby DB is set to: {{ standby_db_idfgisu1 }}"
 
 #################
-- hosts: "{{ primary_db_idfgisu1 }}"
+- hosts: 
+    - "{{ standby_db_idfgicu1 }}"
+    - "{{ primary_db_idfgicu1 }}"
   gather_facts: no
   tasks:
     - name: Swing DB di ENV .IDFGISU1 (dummy)
