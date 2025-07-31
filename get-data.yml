@@ -19,33 +19,33 @@
     - name: Display the output
       debug: msg="{{ db1_role_idfgicu1.stdout }}"
 
-    - name: Set db standby
+    - name: Set UAT
       set_stats:
         data:
-          standby_db_idfgicu1: ""
+          UAT_IDFGICU1: ""
 
-    - name: Display database role for primary
+    - name: Display database role for DEV
       debug:
-        msg: "db1"
-      register: prim
+        msg: "DEV"
+      register: dev
       when: "'PRIMARY' in db1_role_idfgicu1.stdout"
 
-    - name: Display database role for standby
+    - name: Display database role for UAT
       debug:
-        msg: "db1"
-      register: stby
+        msg: "DEV"
+      register: uat
       when: "'PHYSICAL STANDBY' in db1_role_idfgicu1.stdout"
 
-    - name: Set db primary
+    - name: Set DEV
       set_stats:
         data:
-          primary_db_idfgicu1: "192.168.1.211"
+          DEV_IDFGICU1: "192.168.1.211"
       when: "'PRIMARY' in db1_role_idfgicu1.stdout"
 
-    - name: Set db standby
+    - name: Set UAT
       set_stats:
         data:
-          standby_db_idfgicu1: "192.168.1.211"
+          UAT_IDFGICU1: "192.168.1.211"
       when: "'PHYSICAL STANDBY' in db1_role_idfgicu1.stdout"
 
 ###########
@@ -70,33 +70,33 @@
     - name: Display the output
       debug: msg="{{ db2_role_idfgicu1.stdout }}"
 
-    - name: Set db standby
+    - name: Set UAT
       set_stats:
         data:
-          standby_db_idfgicu1: ""
+          UAT_IDFGICU1: ""
 
-    - name: Display database role for primary
+    - name: Display database role for DEV
       debug:
-        msg: "db1"
-      register: prim
+        msg: "DEV"
+      register: dev
       when: "'PRIMARY' in db2_role_idfgicu1.stdout"
 
-    - name: Display database role for standby
+    - name: Display database role for UAT
       debug:
-        msg: "db1"
-      register: stby
+        msg: "DEV"
+      register: uat
       when: "'PHYSICAL STANDBY' in db2_role_idfgicu1.stdout"
 
-    - name: Set db primary
+    - name: Set DEV
       set_stats:
         data:
-          primary_db_idfgicu1: "192.168.1.222"
+          DEV_IDFGICU1: "192.168.1.222"
       when: "'PRIMARY' in db2_role_idfgicu1.stdout"
 
     - name: Set db standby
       set_stats:
         data:
-          standby_db_idfgicu1: "192.168.1.222"
+          UAT_IDFGICU1: "192.168.1.222"
       when: "'PHYSICAL STANDBY' in db2_role_idfgicu1.stdout"
 
 ###########
@@ -120,33 +120,33 @@
     - name: Display the output
       debug: msg="{{ db1_role_idfgisu1.stdout }}"
 
-    - name: Set db standby
+    - name: Set UAT
       set_stats:
         data:
-          standby_db_idfgisu1: ""
+          UAT_IDFGISU1: ""
 
-    - name: Display database role for primary
+    - name: Display database role for DEV
       debug:
-        msg: "db1"
-      register: prim
+        msg: "DEV"
+      register: dev
       when: "'PRIMARY' in db1_role_idfgisu1.stdout"
 
-    - name: Display database role for standby
+    - name: Display database role for UAT
       debug:
-        msg: "db1"
-      register: stby
+        msg: "DEV"
+      register: uat
       when: "'PHYSICAL STANDBY' in db1_role_idfgisu1.stdout"
 
-    - name: Set db primary
+    - name: Set DEV
       set_stats:
         data:
-          primary_db_idfgisu1: "192.168.1.211"
+          DEV_IDFGISU1: "192.168.1.211"
       when: "'PRIMARY' in db1_role_idfgisu1.stdout"
 
-    - name: Set db standby
+    - name: Set UAT
       set_stats:
         data:
-          standby_db_idfgisu1: "192.168.1.211"
+          UAT_idfgisu1: "192.168.1.211"
       when: "'PHYSICAL STANDBY' in db1_role_idfgisu1.stdout"
 
 ###########
@@ -170,31 +170,31 @@
     - name: Display the output
       debug: msg="{{ db2_role_idfgisu1.stdout }}"
 
-    - name: Set db standby
+    - name: Set UAT
       set_stats:
         data:
-          standby_db_idfgisu1: ""
+          UAT_IDFGISU1: ""
 
-    - name: Display database role for primary
+    - name: Display database role for DEV
       debug:
-        msg: "db1"
-      register: prim
+        msg: "DEV"
+      register: dev
       when: "'PRIMARY' in db2_role_idfgisu1.stdout"
 
-    - name: Display database role for standby
+    - name: Display database role for UAT
       debug:
-        msg: "db1"
-      register: stby
+        msg: "DEV"
+      register: uat
       when: "'PHYSICAL STANDBY' in db2_role_idfgisu1.stdout"
 
-    - name: Set db primary
+    - name: Set DEV
       set_stats:
         data:
-          primary_db_idfgisu1: "192.168.1.222"
+          DEV_IDFGISU1: "192.168.1.222"
       when: "'PRIMARY' in db2_role_idfgisu1.stdout"
 
-    - name: Set db standby
+    - name: Set UAT
       set_stats:
         data:
-          standby_db_idfgisu1: "192.168.1.222"
+          UAT_IDFGISU1: "192.168.1.222"
       when: "'PHYSICAL STANDBY' in db2_role_idfgisu1.stdout"
