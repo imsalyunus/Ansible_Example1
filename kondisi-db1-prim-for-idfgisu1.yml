@@ -1,25 +1,25 @@
 ---
-- name: Cek env .IDFGSU1
+- name: Cek env .IDFGISU1
   hosts: localhost
   tasks:
     - name: "Tampilkan data dari DEV"
       debug:
-        msg: "{{ DEV_IDFGSU1 }}"
+        msg: "{{ DEV_IDFGISU1 }}"
         
     - name: "Tampilkan data dari UAT"
       debug:
-        msg: "{{ UAT_IDFGSU1 }}"
+        msg: "{{ UAT_IDFGISU1 }}"
 
     - name: "Cek apakah DEV adalah PRIMARY"
       assert:
         that:
-          - DEV_IDFGSU1 == '192.168.1.211'
+          - DEV_IDFGISU1 == '192.168.1.211'
         fail_msg: "Pengecekan gagal: DEV tidak PRIMARY"
         success_msg: "Pengecekan berhasil: DEV adalah PRIMARY"
 
     - name: "Cek apakah UAT adalah STANDBY"
       assert:
         that:
-          - UAT_IDFGSU1 == '192.168.1.222'
+          - UAT_IDFGISU1 == '192.168.1.222'
         fail_msg: "Pengecekan gagal: UAT tidak STANDBY"
         success_msg: "Pengecekan berhasil: UAT adalah STANDBY"
