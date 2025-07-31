@@ -28,7 +28,8 @@
         export ORACLE_HOME=/u01/app/oracle/product/19.3.0/dbhome_1
         export ORACLE_SID=orcl
         export PATH=$PATH:$ORACLE_HOME/bin
-        echo "SELECT inst_id, name, value FROM gv$dataguard_stats;
+        echo 'SELECT inst_id, name, value FROM gv$dataguard_stats;
+        EXIT;' | sqlplus -s / as sysdba
       register: db1_role
       ignore_errors: true
 
