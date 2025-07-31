@@ -1,0 +1,37 @@
+---
+- name: Cek ROLE database di Env profile .IDFGISU1
+  hosts: 192.168.1.211,192.168.1.222
+  gather_facts: no
+  vars:
+    hostmap:
+      192.168.1.211: DB1
+      192.168.1.222: DB2
+
+  tasks:
+    - name: Cek role di ENV .IDFGISU1
+      shell: |
+        source ~/.IDFGISU1
+        export ORACLE_HOME=/u01/app/oracle/product/19.3.0/dbhome_1
+        export ORACLE_SID=orcl
+        export PATH=$PATH:$ORACLE_HOME/bin
+        echo "SET HEADING OFF FEEDBACK OFF; SELECT database_role FROM v\$database;" \
+        | sqlplus -s / as sysdba \
+        | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
+      register: db_role
+      ignore_errors: true
+
+    - name: Tampilkan hasil database_role
+      debug:
+        msg: "Host {{ inventory_hostname }} => Role: {{ db_role.stdout }}"
+
+    - name: Set primary_db_idfgisu1 jika host adalah PRIMARY
+      set_stats:
+        data:
+          primary_db_idfgisu1: "{{ hostmap[inventory_hostname] }}"
+      when: "'PRIMARY' in db_role.stdout"
+
+    - name: Set standby_db_idfgisu1 jika host adalah PHYSICAL STANDBY
+      set_stats:
+        data:
+          standby_db_idfgisu1: "{{ hostmap[inventory_hostname] }}"
+      when: "'PHYSICAL STANDBY' in db_role.stdout"
