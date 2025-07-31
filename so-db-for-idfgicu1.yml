@@ -21,7 +21,7 @@
 #################
 - hosts: 
     - "{{ DEV_IDFGICU1 }}"
-    - "{{ UAT_IDFGICU1 }}"
+    #- "{{ UAT_IDFGICU1 }}"
   gather_facts: no
   tasks:
     - name: Swing DB di ENV .IDFGICU1 (dummy)
