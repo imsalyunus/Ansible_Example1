@@ -14,10 +14,10 @@
         export ORACLE_HOME=/u01/app/oracle/product/19.3.0/dbhome_1
         export ORACLE_SID=orcl
         export PATH=$PATH:$ORACLE_HOME/bin
-        echo "SET HEADING OFF
+        echo 'SET HEADING OFF
         SET FEEDBACK OFF
         SELECT database_role FROM v$database; 
-        EXIT;" | sqlplus -s / as sysdba
+        EXIT;' | sqlplus -s / as sysdba
       register: role_cu1
       ignore_errors: yes
 
@@ -50,10 +50,10 @@
         export ORACLE_HOME=/u01/app/oracle/product/19.3.0/dbhome_1
         export ORACLE_SID=orcl
         export PATH=$PATH:$ORACLE_HOME/bin
-        echo "SET HEADING OFF
+        echo 'SET HEADING OFF
         SET FEEDBACK OFF
         SELECT database_role FROM v$database; 
-        EXIT;" | sqlplus -s / as sysdba
+        EXIT;' | sqlplus -s / as sysdba
       register: role_su1
       ignore_errors: yes
 
