@@ -1,6 +1,7 @@
 ---
 - name: Cek env .IDFGISU1
   hosts: localhost
+  gather_facts: no
   tasks:
     - name: "Tampilkan data dari DEV"
       debug:
