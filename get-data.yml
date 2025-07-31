@@ -1,8 +1,7 @@
-################ ASU
-
 ---
 - name: Cek ROLE database untuk env profile .IDFGICU1
   hosts: 192.168.1.211
+  gather_facts: no
   tasks:
     - name: Cek role di ENV .IDFGICU1
       shell: |
@@ -50,9 +49,10 @@
       when: "'PHYSICAL STANDBY' in db1_role_idfgicu1.stdout"
 
 ###########
----
+
 - name: Cek ROLE database untuk env profile .IDFGICU1
   hosts: 192.168.1.222
+  gather_facts: no
   tasks:
     - name: Cek role di ENV .IDFGICU1
       shell: |
