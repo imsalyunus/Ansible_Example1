@@ -11,7 +11,8 @@
         msg: "Standby DB is set to: {{ standby_db_IDFGISU1 }}"
         
 ##############################
-- hosts: "{{ standby_db_IDFGISU1 }}"
+- name: CR SU1
+  hosts: "{{ standby_db_IDFGISU1 }}"
   gather_facts: no
   tasks:      
     - name: Check_Replication_Primary_to_Standby
