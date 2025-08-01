@@ -38,12 +38,12 @@
     - name: Check database role
       debug:
         msg: "Database role is 'PHYSICAL STANDBY'. Process successful."
-      when: database_role == "PHYSICAL STANDBY"
+      when: db_role_status == "PHYSICAL STANDBY"
 
     - name: Fail if database role is not PHYSICAL STANDBY
       fail:
-        msg: "Database role is not 'PHYSICAL STANDBY'. Current role: {{ database_role }}"
-      when: database_role != "PHYSICAL STANDBY"
+        msg: "Database role is not 'PHYSICAL STANDBY'. Current role: {{ db_role_status }}"
+      when: db_role_status != "PHYSICAL STANDBY"
 
     - name: Commit switchover jika status TO STANDBY
       shell: |
