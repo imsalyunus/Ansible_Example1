@@ -17,16 +17,14 @@
   tasks:      
     - name: Check_Replication_Primary_to_Standby
       shell: |
-        . .IDFGISU1
+        source ~/.IDFGISU1
         export ORACLE_HOME=/u01/app/oracle/product/19.3.0/dbhome_1
         export ORACLE_SID=orcl
         export PATH=$PATH:$ORACLE_HOME/bin        
-        sqlplus -s / as sysdba <<EOF
+        sqlplus -s / as sysdba
         alter system archive log current;
         alter system archive log current;
         alter system archive log current;
-        EXIT;
-        EOF
       register: db_open
 
     - name: Check for success in database status
