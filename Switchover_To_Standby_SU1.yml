@@ -1,0 +1,68 @@
+---
+- hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: "Tampilkan data dari PRIMARY"
+      debug:
+        msg: "{{ primary_db_IDFGISU1 }}"
+
+    - name: "Debug nilai DEV pada env .IDFGISU1"
+      debug:
+        msg: "Primary DB is set to: {{ primary_db_IDFGISU1 }}"
+        
+##############################
+- hosts:
+    - "{{ primary_db_IDFGISU1 }}"
+  tasks:
+    - name: Cek status switchover dari database
+      shell: |
+        . ~/.IDFGISU1
+        # Set Environment Variables
+        export ORACLE_HOME=/u01/app/oracle/product/19.3.0/dbhome_1
+        export ORACLE_SID=orcl
+        export PATH=$PATH:$ORACLE_HOME/bin
+        sqlplus -S / as sysdba <<EOF
+        SET HEAD OFF
+        SET FEEDBACK OFF
+        SET PAGESIZE 0
+        SELECT database_role || '|' || switchover_status FROM v\$database;
+        EXIT
+        EOF
+      register: db_role_status
+      ignore_errors: yes
+
+    - name: Display database role status
+      debug:
+        msg: "Database role status: {{ db_role_status.stdout }}"
+
+    - name: Set fakta switchover_status
+      set_fact:
+        Database role status: "{{ db_role_status.stdout }}"
+
+    - name: Check database role
+      debug:
+        msg: "Database role is 'PHYSICAL STANDBY'. Process successful."
+      when: database_role == "PHYSICAL STANDBY"
+
+    - name: Fail if database role is not PHYSICAL STANDBY
+      fail:
+        msg: "Database role is not 'PHYSICAL STANDBY'. Current role: {{ database_role }}"
+      when: database_role != "PHYSICAL STANDBY"
+
+    - name: Commit switchover jika status TO STANDBY
+      shell: |
+        . ~/.IDFGISU1
+        export ORACLE_HOME=/u01/app/oracle/product/19.3.0/dbhome_1
+        export ORACLE_SID=orcl
+        export PATH=$PATH:$ORACLE_HOME/bin
+        sqlplus -S / as sysdba <<EOF
+        ALTER DATABASE COMMIT TO SWITCHOVER TO STANDBY WITH SESSION SHUTDOWN;
+        EXIT
+        EOF
+      register: alter
+      ignore_errors: yes
+
+    - name: Check for success in database status
+      fail:
+        msg: "Database could not be opened. Output: {{ alter.stdout }}"
+      when: "'Database altered' not in alter.stdout"
