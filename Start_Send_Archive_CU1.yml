@@ -21,7 +21,7 @@
         export ORACLE_HOME=/u01/app/oracle/product/19.3.0/dbhome_1
         export ORACLE_SID=orcl
         export PATH=$PATH:$ORACLE_HOME/bin
-        echo "alter system set log_archive_dest_state_2=ENABLE scope=both;" | sqlplus -s / as sysdba
+        echo "ALTER SYSTEM SET log_archive_dest_state_2=ENABLE SCOPE=BOTH;" | sqlplus -s / as sysdba
       register: enable_cu1
       ignore_errors: yes
 
