@@ -27,4 +27,4 @@
     - name: Validasi ENABLE
       fail:
         msg: "Gagal ENABLE di CU1: {{ enable_cu1.stdout }}"
-      when: "'System altered' not in enable_cu11.stdout"
+      when: "'System altered' not in enable_cu1.stdout"
