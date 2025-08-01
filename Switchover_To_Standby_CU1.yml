@@ -43,7 +43,7 @@
     - name: Fail if database role is not PHYSICAL STANDBY
       fail:
         msg: "Database role is not 'TO STANDBY'. Current role: {{ db_role_status }}"
-      when: '"TO STANDBY" in db_role_status'
+      when: '"TO STANDBY" not in db_role_status'
 
     - name: Commit switchover jika status TO STANDBY
       shell: |
