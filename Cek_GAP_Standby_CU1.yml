@@ -12,7 +12,7 @@
 
 #########################
 - name: Query Oracle Database Role and Switchover Status
-  hosts: "{{ standby_db_IDFGICU1 }}"
+  #hosts: "{{ standby_db_IDFGICU1 }}"
   tasks:
     - name: Jalankan SQL untuk cek perbedaan archived log dan applied log
       shell: |
