@@ -1,0 +1,50 @@
+---
+- hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: "Tampilkan data dari STANDBY"
+      debug:
+        msg: "{{ standby_db_IDFGISU1 }}"
+
+    - name: "Debug nilai Standby pada env .IDFGISU1"
+      debug:
+        msg: "Standby DB is set to: {{ standby_db_IDFGISU1 }}"
+
+#########################
+- name: Query Oracle Database Role and Switchover Status
+  hosts: "{{ standby_db_IDFGISU1 }}"
+  tasks:
+    - name: Jalankan SQL untuk cek perbedaan archived log dan applied log
+      shell: |
+        source ~/.IDFGISU1
+        export ORACLE_HOME=/u01/app/oracle/product/19.3.0/dbhome_1
+        export ORACLE_SID=orcl
+        export PATH=$PATH:$ORACLE_HOME/bin
+        sqlplus -S / as sysdba <<EOF
+        SET PAGESIZE 0 FEEDBACK OFF VERIFY OFF HEADING OFF ECHO OFF
+        SELECT (ARCH.SEQUENCE# - APPL.SEQUENCE#) AS Difference
+        FROM (
+            SELECT THREAD#, SEQUENCE#
+            FROM V\$ARCHIVED_LOG
+            WHERE (THREAD#, FIRST_TIME) IN (
+                SELECT THREAD#, MAX(FIRST_TIME)
+                FROM V\$ARCHIVED_LOG
+                GROUP BY THREAD#
+            )
+        ) ARCH,
+        (
+            SELECT THREAD#, SEQUENCE#
+            FROM V\$LOG_HISTORY
+            WHERE (THREAD#, FIRST_TIME) IN (
+                SELECT THREAD#, MAX(FIRST_TIME)
+                FROM V\$LOG_HISTORY
+                GROUP BY THREAD#
+            )
+        ) APPL
+        WHERE ARCH.THREAD# = APPL.THREAD#;
+        EOF
+      register: db_gap
+
+    - name: Display SQL Query Result
+      debug:
+        var: db_gap.stdout_lines
