@@ -3,24 +3,24 @@
   hosts: localhost
   gather_facts: no
   tasks:
-    - name: "Tampilkan data dari DEV"
+    - name: "Tampilkan data dari PRIMARY"
       debug:
-        msg: "{{ DEV_IDFGICU1 }}"
+        msg: "{{ primary_db_IDFGICU1 }}"
         
-    - name: "Tampilkan data dari UAT"
+    - name: "Tampilkan data dari STANDBY"
       debug:
-        msg: "{{ UAT_IDFGICU1 }}"
+        msg: "{{ standby_db_IDFGICU1 }}"
 
     - name: "Cek apakah PRIMARY ada di DEV"
       assert:
         that:
-          - DEV_IDFGICU1 == '192.168.1.211'
+          - primary_db_IDFGICU1 == '192.168.1.211'
         fail_msg: "Pengecekan gagal: DEV tidak PRIMARY"
         success_msg: "Pengecekan berhasil: DEV adalah PRIMARY"
 
-    - name: "Cek apakah UAT ada di STANDBY"
+    - name: "Cek apakah STANDBY ada di UAT"
       assert:
         that:
-          - UAT_IDFGICU1 == '192.168.1.222'
+          - standby_db_IDFGICU1 == '192.168.1.222'
         fail_msg: "Pengecekan gagal: UAT tidak STANDBY"
         success_msg: "Pengecekan berhasil: UAT adalah STANDBY"
