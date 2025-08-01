@@ -11,7 +11,8 @@
         msg: "STANDBY DB is set to: {{ standby_db_IDFGISU1 }}"
         
 ##############################
-- hosts: "{{ standby_db_IDFGISU1 }}"
+- name: CGN SU1
+  hosts: "{{ standby_db_IDFGISU1 }}"
   gather_facts: no
   tasks:
     - name: Jalankan query perbandingan log archive dan log history
