@@ -11,6 +11,9 @@
         msg: "Standby DB is set to: {{ standby_db_IDFGISU1 }}"
         
 ########################
+- name: So SU1
+  hosts: "{{ standby_db_IDFGISU1 }}"
+  tasks:
     - name: Cek status database_role dan switchover_status
       shell: |  
         . ~/.IDFGISU1
