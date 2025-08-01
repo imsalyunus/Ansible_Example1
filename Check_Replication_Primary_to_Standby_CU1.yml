@@ -1,0 +1,38 @@
+---
+- hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: "Tampilkan data dari STANDBY"
+      debug:
+        msg: "{{ standby_db_IDFGICU1 }}"
+
+    - name: "Debug nilai Standby pada env .IDFGICU1"
+      debug:
+        msg: "Standby DB is set to: {{ standby_db_IDFGICU1 }}"
+        
+##############################
+- hosts: "{{ standby_db_IDFGICU1 }}"
+  gather_facts: no
+  tasks:      
+    - name: Check_Replication_Primary_to_Standby
+      shell: |
+        . .IDFGICU1
+        export ORACLE_HOME=/u01/app/oracle/product/19.3.0/dbhome_1
+        export ORACLE_SID=orcl
+        export PATH=$PATH:$ORACLE_HOME/bin        
+        sqlplus -s / as sysdba <<EOF
+        alter system archive log current;
+        alter system archive log current;
+        alter system archive log current;
+        EXIT;
+        EOF
+      register: archive_log_result
+
+    - name: Validasi hasil archive log
+      fail:
+        msg: "Perintah archive log gagal: {{ archive_log_result.stdout }}"
+      when: "'System altered' not in archive_log_result.stdout"
+
+    - name: Tampilkan hasil perintah archive log
+      debug:
+        var: archive_log_result.stdout
