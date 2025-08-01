@@ -1,0 +1,51 @@
+---
+- hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: "Tampilkan data dari STANDBY"
+      debug:
+        msg: "{{ standby_db_IDFGICU1 }}"
+        
+    - name: "Debug nilai STANDBY pada env .IDFGICU1"
+      debug:
+        msg: "Standby DB is set to: {{ standby_db_IDFGICU1 }}"
+########################
+    - name: Cek status database_role dan switchover_status
+      shell: |  
+        . ~/.IDFGICU1
+        export ORACLE_HOME=/u01/app/oracle/product/19.3.0/dbhome_1
+        export ORACLE_SID=orcl
+        export PATH=$PATH:$ORACLE_HOME/bin        
+        sqlplus -S / as sysdba <<EOF
+        SET HEAD OFF
+        SET FEEDBACK OFF
+        SET PAGESIZE 0
+        SELECT database_role || '|' || switchover_status FROM v\$database;
+        EXIT
+        EOF
+      register: hasil_status
+
+    - name: Tampilkan hasil status
+      debug:
+        var: hasil_status.stdout
+
+    - name: Commit to switchover to PRIMARY jika status TO PRIMARY
+      shell: |
+        . ~/.IDFGICU1
+        export ORACLE_HOME=/u01/app/oracle/product/19.3.0/dbhome_1
+        export ORACLE_SID=orcl
+        export PATH=$PATH:$ORACLE_HOME/bin         
+        sqlplus -S / as sysdba <<EOF
+        ALTER DATABASE COMMIT TO SWITCHOVER TO PRIMARY WITH SESSION SHUTDOWN;
+        EXIT
+        EOF
+      register: hasil_switchover
+
+    - name: Display the database status
+      debug:
+        msg: "Database Status:\n{{ hasil_switchover.stdout }}"
+
+    - name: Check for success in database status
+      fail:
+        msg: "Database could not be opened. Output: {{ hasil_switchover.stdout }}"
+      when: "'Database altered' not in hasil_switchover.stdout"
