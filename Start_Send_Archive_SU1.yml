@@ -11,7 +11,7 @@
         msg: "STANDBY DB is set to: {{ standby_db_IDFGISU1 }}"
         
 ##############################
-  hosts: "{{ standby_db_IDFGISU1 }}"
+- hosts: "{{ standby_db_IDFGISU1 }}"
   gather_facts: no
   tasks:
     - name: Set ENABLE log_archive_dest_state_2
