@@ -5,22 +5,22 @@
   tasks:
     - name: "Tampilkan data dari DEV"
       debug:
-        msg: "{{ DEV_IDFGISU1 }}"
+        msg: "{{ primary_db_IDFGISU1 }}"
         
     - name: "Tampilkan data dari UAT"
       debug:
-        msg: "{{ UAT_IDFGISU1 }}"
+        msg: "{{ standby_db_IDFGISU1 }}"
 
-    - name: "Cek apakah DEV adalah PRIMARY"
+    - name: "Cek apakah PRIMARY ada di DEV"
       assert:
         that:
-          - DEV_IDFGISU1 == '192.168.1.211'
+          - primary_db_IDFGISU1 == '192.168.1.211'
         fail_msg: "Pengecekan gagal: DEV tidak PRIMARY"
         success_msg: "Pengecekan berhasil: DEV adalah PRIMARY"
 
-    - name: "Cek apakah UAT adalah STANDBY"
+    - name: "Cek apakah STANDBY ada di UAT"
       assert:
         that:
-          - UAT_IDFGISU1 == '192.168.1.222'
+          - standby_db_IDFGISU1 == '192.168.1.222'
         fail_msg: "Pengecekan gagal: UAT tidak STANDBY"
         success_msg: "Pengecekan berhasil: UAT adalah STANDBY"
