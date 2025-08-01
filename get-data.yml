@@ -1,5 +1,5 @@
 ---
-- name: Cek ROLE database untuk env profile .IDFGICU1
+- name: Cek ROLE database untuk env profile .IDFGICU1 DEV 
   hosts: 192.168.1.211
   gather_facts: no
   tasks:
@@ -19,38 +19,38 @@
     - name: Display the output
       debug: msg="{{ db1_role_idfgicu1.stdout }}"
 
-    - name: Set UAT
+    - name: Set db standby
       set_stats:
         data:
-          UAT_IDFGICU1: ""
+          standby_db_IDFGICU1: ""
 
-    - name: Display database role for DEV
+    - name: Display database role for PRIMARY
       debug:
-        msg: "DEV"
-      register: dev
+        msg: "BTR_CU1"
+      register: prim
       when: "'PRIMARY' in db1_role_idfgicu1.stdout"
 
-    - name: Display database role for UAT
+    - name: Display database role for STANDBY
       debug:
-        msg: "DEV"
-      register: uat
+        msg: "BTR_CU1"
+      register: stby
       when: "'PHYSICAL STANDBY' in db1_role_idfgicu1.stdout"
 
-    - name: Set DEV
+    - name: Set DB Primary
       set_stats:
         data:
-          DEV_IDFGICU1: "192.168.1.211"
+          primary_db_IDFGICU1: "192.168.1.211"
       when: "'PRIMARY' in db1_role_idfgicu1.stdout"
 
-    - name: Set UAT
+    - name: Set DB Stanbdy
       set_stats:
         data:
-          UAT_IDFGICU1: "192.168.1.211"
+          standby_db_IDFGICU1: "192.168.1.211"
       when: "'PHYSICAL STANDBY' in db1_role_idfgicu1.stdout"
 
 ###########
 
-- name: Cek ROLE database untuk env profile .IDFGICU1
+- name: Cek ROLE database untuk env profile .IDFGICU1 UAT
   hosts: 192.168.1.222
   gather_facts: no
   tasks:
@@ -70,37 +70,37 @@
     - name: Display the output
       debug: msg="{{ db2_role_idfgicu1.stdout }}"
 
-    - name: Set UAT
-      set_stats:
-        data:
-          UAT_IDFGICU1: ""
-
-    - name: Display database role for DEV
-      debug:
-        msg: "DEV"
-      register: dev
-      when: "'PRIMARY' in db2_role_idfgicu1.stdout"
-
-    - name: Display database role for UAT
-      debug:
-        msg: "DEV"
-      register: uat
-      when: "'PHYSICAL STANDBY' in db2_role_idfgicu1.stdout"
-
-    - name: Set DEV
-      set_stats:
-        data:
-          DEV_IDFGICU1: "192.168.1.222"
-      when: "'PRIMARY' in db2_role_idfgicu1.stdout"
-
     - name: Set db standby
       set_stats:
         data:
-          UAT_IDFGICU1: "192.168.1.222"
+          standby_db_IDFGICU1: ""
+
+    - name: Display database role for PRIMARY
+      debug:
+        msg: "NTT_CU1"
+      register: prim
+      when: "'PRIMARY' in db2_role_idfgicu1.stdout"
+
+    - name: Display database role for STANDBY
+      debug:
+        msg: "NTT_CU1"
+      register: stby
+      when: "'PHYSICAL STANDBY' in db2_role_idfgicu1.stdout"
+
+    - name: Set DB Primary
+      set_stats:
+        data:
+          primary_db_IDFGICU1: "192.168.1.222"
+      when: "'PRIMARY' in db2_role_idfgicu1.stdout"
+
+    - name: Set DB Stanbdy
+      set_stats:
+        data:
+          standby_db_IDFGICU1: "192.168.1.222"
       when: "'PHYSICAL STANDBY' in db2_role_idfgicu1.stdout"
 
 ###########
-- name: Cek ROLE database untuk env profile .IDFGISU1
+- name: Cek ROLE database untuk env profile .IDFGISU1 DEV
   hosts: 192.168.1.211
   gather_facts: no
   tasks:
@@ -120,37 +120,37 @@
     - name: Display the output
       debug: msg="{{ db1_role_idfgisu1.stdout }}"
 
-    - name: Set UAT
+    - name: Set db standby
       set_stats:
         data:
-          UAT_IDFGISU1: ""
+          standby_db_IDFGISU1: ""
 
-    - name: Display database role for DEV
+    - name: Display database role for PRIMARY
       debug:
-        msg: "DEV"
-      register: dev
+        msg: "BTR_SU1"
+      register: prim
       when: "'PRIMARY' in db1_role_idfgisu1.stdout"
 
-    - name: Display database role for UAT
+    - name: Display database role for STANDBY
       debug:
-        msg: "DEV"
-      register: uat
+        msg: "BTR_SU1"
+      register: stby
       when: "'PHYSICAL STANDBY' in db1_role_idfgisu1.stdout"
 
-    - name: Set DEV
+    - name: Set DB Primary
       set_stats:
         data:
-          DEV_IDFGISU1: "192.168.1.211"
+          primary_db_IDFGISU1: "192.168.1.211"
       when: "'PRIMARY' in db1_role_idfgisu1.stdout"
 
-    - name: Set UAT
+    - name: Set DB Standby
       set_stats:
         data:
-          UAT_IDFGISU1: "192.168.1.211"
+          standby_db_IDFGISU1: "192.168.1.211"
       when: "'PHYSICAL STANDBY' in db1_role_idfgisu1.stdout"
 
 ###########
-- name: Cek ROLE database untuk env profile .IDFGISU1
+- name: Cek ROLE database untuk env profile .IDFGISU1 UAT
   hosts: 192.168.1.222
   gather_facts: no
   tasks:
@@ -170,31 +170,31 @@
     - name: Display the output
       debug: msg="{{ db2_role_idfgisu1.stdout }}"
 
-    - name: Set UAT
+    - name: Set db standby
       set_stats:
         data:
-          UAT_IDFGISU1: ""
+          standby_db_IDFGISU1: ""
 
-    - name: Display database role for DEV
+    - name: Display database role for PRIMARY
       debug:
-        msg: "DEV"
-      register: dev
+        msg: "NTT_SU1"
+      register: prim
       when: "'PRIMARY' in db2_role_idfgisu1.stdout"
 
-    - name: Display database role for UAT
+    - name: Display database role for STANDBY
       debug:
-        msg: "DEV"
-      register: uat
+        msg: "NTT_SU1"
+      register: stby
       when: "'PHYSICAL STANDBY' in db2_role_idfgisu1.stdout"
 
-    - name: Set DEV
+    - name: Set DB Primary
       set_stats:
         data:
-          DEV_IDFGISU1: "192.168.1.222"
+          primary_db_IDFGISU1: "192.168.1.222"
       when: "'PRIMARY' in db2_role_idfgisu1.stdout"
 
-    - name: Set UAT
+    - name: Set DB Standby
       set_stats:
         data:
-          UAT_IDFGISU1: "192.168.1.222"
+          standby_db_IDFGISU1: "192.168.1.222"
       when: "'PHYSICAL STANDBY' in db2_role_idfgisu1.stdout"
