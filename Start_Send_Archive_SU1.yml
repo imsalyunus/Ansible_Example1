@@ -1,0 +1,30 @@
+---
+- hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: "Tampilkan data dari STANDBY"
+      debug:
+        msg: "{{ standby_db_IDFGISU1 }}"
+
+    - name: "Debug nilai STANDBY pada env .IDFGISU1"
+      debug:
+        msg: "STANDBY DB is set to: {{ standby_db_IDFGISU1 }}"
+        
+##############################
+  hosts: "{{ standby_db_IDFGISU1 }}"
+  gather_facts: no
+  tasks:
+    - name: Set ENABLE log_archive_dest_state_2
+      shell: |
+        . ~/.IDFGISU1
+        export ORACLE_HOME=/u01/app/oracle/product/19.3.0/dbhome_1
+        export ORACLE_SID=orcl
+        export PATH=$PATH:$ORACLE_HOME/bin
+        echo "alter system set log_archive_dest_state_2=ENABLE scope=both;" | sqlplus -s / as sysdba
+      register: enable_su1
+      ignore_errors: yes
+
+    - name: Validasi ENABLE
+      fail:
+        msg: "Gagal ENABLE di SU1: {{ enable_su1.stdout }}"
+      when: "'System altered' not in enable_su1.stdout"
