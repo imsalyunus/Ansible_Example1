@@ -13,6 +13,7 @@
 ###################
 - name: Sinkronisasi & Cek daftar Archive Log
   hosts: "{{ primary_db_IDFGISU1 }}"
+  gather_facts: no
   tasks:
     - name: Source the bash profile and set environment variables
       shell: |
