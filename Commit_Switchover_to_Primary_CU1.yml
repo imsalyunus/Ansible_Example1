@@ -39,7 +39,7 @@
         export ORACLE_SID=orcl
         export PATH=$PATH:$ORACLE_HOME/bin         
         sqlplus -S / as sysdba <<EOF
-        ALTER DATABASE COMMIT TO SWITCHOVER TO PRIMARY WITH SESSION SHUTDOWN;
+        ALTER DATABASE COMMIT TO SWITCHOVER TO PRIMARY;
         EXIT
         EOF
       register: hasil_switchover
