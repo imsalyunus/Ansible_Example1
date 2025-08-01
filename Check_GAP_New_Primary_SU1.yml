@@ -46,7 +46,7 @@
         WHERE ARCH.THREAD# = APPL.THREAD#;
         exit;
         EOF
-      args
+      args:
         executeable: /bin/bash
       register: log_comparison_result
       ignore_errors: yes
