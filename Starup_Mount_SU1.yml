@@ -13,6 +13,7 @@
 ##############################
 - name: START MOUNT SU1
   hosts: "{{ primary_db_IDFGISU1 }}"
+  gather_facts: no
   tasks:
     - name: Jalankan startup mount
       shell: |
