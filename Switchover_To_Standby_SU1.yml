@@ -31,19 +31,30 @@
       register: db_role_status
       ignore_errors: yes
 
-    - name: Display database role status
+    - name: Display raw database role status
       debug:
-        msg: "Database role status: {{ db_role_status.stdout }}"
+        msg: "Database role status raw output: {{ db_role_status.stdout }}"
 
-    - name: Check database role
+    - name: Extract role and switchover status
+      set_fact:
+        db_role: "{{ db_role_status.stdout.split('|')[0] | trim }}"
+        switchover_status: "{{ db_role_status.stdout.split('|')[1] | trim }}"
+
+    - name: Debug extracted values
       debug:
-        msg: "Database role is 'TO STANDBY'. Process successful."
-      when: '"TO STANDBY" in db_role_status'
+        msg:
+          - "Extracted role: {{ db_role }}"
+          - "Switchover status: {{ switchover_status }}"
 
-    - name: Fail if database role is not PHYSICAL STANDBY
+    - name: Check switchover status is TO STANDBY
+      debug:
+        msg: "Database switchover status is 'TO STANDBY'. Process can continue."
+      when: switchover_status == "TO STANDBY"
+
+    - name: Fail if switchover status is not TO STANDBY
       fail:
-        msg: "Database role is not 'TO STANDBY'. Current role: {{ db_role_status }}"
-      when: '"TO STANDBY" not in db_role_status'
+        msg: "Switchover status is not 'TO STANDBY'. Current status: {{ switchover_status }}"
+      when: switchover_status != "TO STANDBY"
 
     - name: Commit switchover jika status TO STANDBY
       shell: |
