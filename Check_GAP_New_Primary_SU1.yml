@@ -17,7 +17,7 @@
   tasks:
     - name: Jalankan query perbandingan log archive dan log history
       shell: |
-        . .IDFGISU1
+        source ~/.IDFGISU1
         export ORACLE_HOME=/u01/app/oracle/product/19.3.0/dbhome_1
         export ORACLE_SID=orcl
         export PATH=$PATH:$ORACLE_HOME/bin        
@@ -46,7 +46,10 @@
         WHERE ARCH.THREAD# = APPL.THREAD#;
         exit;
         EOF
+      args
+        executeable: /bin/bash
       register: log_comparison_result
+      ignore_errors: yes
 
     - name: Tampilkan hasil query perbandingan log
       debug:
