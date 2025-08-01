@@ -11,7 +11,8 @@
         msg: "Primary DB is set to: {{ primary_db_IDFGISU1 }}"
         
 ###############################
-- hosts: "{{ primary_db_IDFGISU1 }}"
+- name: DEFER SU1
+  hosts: "{{ primary_db_IDFGISU1 }}"
   gather_facts: no
   tasks:
     - name: Set DEFER log_archive_dest_state_2 - PRIMARY SU1
@@ -20,7 +21,7 @@
         export ORACLE_HOME=/u01/app/oracle/product/19.3.0/dbhome_1
         export ORACLE_SID=orcl
         export PATH=$PATH:$ORACLE_HOME/bin
-        echo "alter system set log_archive_dest_state_2=DEFER scope=both;" | sqlplus -s / as sysdba
+        echo "ALTER SYSTEM SET log_archive_dest_state_2=DEFER SCOPE=BOTH;" | sqlplus -s / as sysdba
       register: defer_su1_primary
       ignore_errors: yes
 
