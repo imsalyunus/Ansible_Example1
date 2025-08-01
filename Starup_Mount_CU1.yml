@@ -11,7 +11,8 @@
         msg: "Primary DB is set to: {{ primary_db_IDFGICU1 }}"
         
 ##############################
-- hosts: {{ primary_db_IDFGICU1 }}
+- name: Start Mount CU1
+  hosts: "{{ primary_db_IDFGICU1 }}"
   tasks:
     - name: Jalankan startup mount
       shell: |
