@@ -35,10 +35,6 @@
       debug:
         msg: "Database role status: {{ db_role_status.stdout }}"
 
-    - name: Set fakta switchover_status
-      set_fact:
-        Database role status: "{{ db_role_status.stdout }}"
-
     - name: Check database role
       debug:
         msg: "Database role is 'PHYSICAL STANDBY'. Process successful."
