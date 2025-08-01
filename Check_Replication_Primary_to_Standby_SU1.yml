@@ -27,13 +27,16 @@
         alter system archive log current;
         EXIT;
         EOF
-      register: archive_log_result
+      register: db_open
 
-    - name: Validasi hasil archive log
+    - name: Check for success in database status
       fail:
-        msg: "Perintah archive log gagal: {{ archive_log_result.stdout }}"
-      when: "'System altered' not in archive_log_result.stdout"
+        msg: "System could not be altered. Output: {{ db_open.stdout }}"
+      when: "'System altered' not in db_open.stdout"
 
-    - name: Tampilkan hasil perintah archive log
+    - name: Display success message
       debug:
-        var: archive_log_result.stdout
+        msg: "System successfully altered.\n{{ db_open.stdout }}"
+      when: "'System altered' in db_open.stdout"
+
+
