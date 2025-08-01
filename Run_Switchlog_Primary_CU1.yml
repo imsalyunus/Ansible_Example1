@@ -1,0 +1,30 @@
+---
+- hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: "Tampilkan data dari PRIMARY"
+      debug:
+        msg: "{{ primary_db_IDFGICU1 }}"
+
+    - name: "Debug nilai DEV pada env .IDFGICU1"
+      debug:
+        msg: "Primary DB is set to: {{ primary_db_IDFGICU1 }}"
+
+###################
+- name: Sinkronisasi & Cek daftar Archive Log
+  hosts: "{{ primary_db_IDFGICU1 }}"
+  tasks:
+    - name: Source the bash profile and set environment variables
+      shell: |
+        # Set Environment Variables
+        source ~/.IDFGICU1
+        for i in {1..3}; do
+          echo "ALTER SYSTEM ARCHIVE LOG CURRENT;" | sqlplus -s / as sysdba
+        done
+        echo "ARCHIVE LOG LIST;" | sqlplus -s / as sysdba
+      register: db_switchlog
+      #ignore_errors: yes
+
+    - name: Display SQL command result
+      debug:
+        msg: "{{ db_switchlog.stdout_lines }}"
