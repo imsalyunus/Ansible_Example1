@@ -19,20 +19,17 @@
         . ~/.IDFGISU1
         export ORACLE_HOME=/u01/app/oracle/product/19.3.0/dbhome_1
         export ORACLE_SID=orcl
-        export PATH=$PATH:$ORACLE_HOME/bin        
-        sqlplus -S / as sysdba <<EOF
-        SET FEEDBACK OFF
-        SET HEAD OFF
-        ALTER DATABASE OPEN;
-        EXIT
-        EOF
-      register: hasil_open_db
-      
-    - name: Tampilkan hasil open database
-      debug:
-        var: hasil_open_db.stdout
+        export PATH=$PATH:$ORACLE_HOME/bin
+        echo "ALTER DATABASE OPEN;" | sqlplus -s / as sysdba
+      register: db_open
+      ignore_errors: yes
 
-    - name: Validasi hasil OPEN berhasil
+    - name: Check for success in database status
       fail:
-        msg: "⛔ ALTER DATABASE OPEN gagal dilakukan"
-      when: "'Database altered' not in hasil_open_db.stdout"
+        msg: "Database could not be opened. Output: {{ db_open.stdout }}"
+      when: "'Database altered' not in db_open.stdout"
+
+    - name: Display success message
+      debug:
+        msg: "Database successfully opened.\n{{ db_open.stdout }}"
+      when: "'Database altered' in db_open.stdout"
