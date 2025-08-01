@@ -1,0 +1,30 @@
+---
+- hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: "Tampilkan data dari PRIMARY"
+      debug:
+        msg: "{{ primary_db_IDFGISU1 }}"
+
+    - name: "Debug nilai DEV pada env .IDFGISU1"
+      debug:
+        msg: "Primary DB is set to: {{ primary_db_IDFGISU1 }}"
+        
+##############################
+- hosts: "{{ primary_db_IDFGISU1 }}"
+  gather_facts: no
+  tasks:
+    - name: Jalankan perintah START MRP - PRIMARY SU1
+      shell: |
+        . ~/.IDFGISU1
+        export ORACLE_HOME=/u01/app/oracle/product/19.3.0/dbhome_1
+        export ORACLE_SID=orcl
+        export PATH=$PATH:$ORACLE_HOME/bin
+        echo "alter database recover managed standby database disconnect from session;" | sqlplus -s / as sysdba
+      register: mrp_primary_su1_result
+      ignore_errors: yes
+
+    - name: Validasi hasil START MRP - PRIMARY SU1
+      fail:
+        msg: "Gagal START MRP di PRIMARY CU1: {{ mrp_primary_su1_result.stdout }}"
+      when: "'Database altered' not in mrp_primary_su1_result.stdout"
