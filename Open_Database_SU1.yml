@@ -11,6 +11,8 @@
         msg: "STANDBY DB is set to: {{ standby_db_IDFGISU1 }}"
 
 ########################
+- hosts: {{ standby_db_IDFGISU1 }}
+  tasks:
     - name: Jalankan perintah ALTER DATABASE OPEN
       shell: |
         . ~/.IDFGISU1
