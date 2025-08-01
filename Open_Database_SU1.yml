@@ -13,6 +13,7 @@
 ########################
 - name: OPEN DB SU1
   hosts: "{{ standby_db_IDFGISU1 }}"
+  gather_facts: no
   tasks:
     - name: Jalankan perintah ALTER DATABASE OPEN
       shell: |
