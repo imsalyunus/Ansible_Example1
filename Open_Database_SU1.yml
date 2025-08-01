@@ -35,4 +35,4 @@
     - name: Validasi hasil OPEN berhasil
       fail:
         msg: "⛔ ALTER DATABASE OPEN gagal dilakukan"
-      when: "'database altered' not in hasil_open_db.stdout"
+      when: "'Database altered' not in hasil_open_db.stdout"
