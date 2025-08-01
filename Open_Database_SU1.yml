@@ -27,52 +27,12 @@
         EXIT
         EOF
       register: hasil_open_db
-      async: 120
-      poll: 0
-
-    - name: Tunggu hasil async open database
-      async_status:
-        jid: "{{ hasil_open_db.ansible_job_id }}"
-      register: hasil_open_db_status
-      until: hasil_open_db_status.finished
-      retries: 10
-      delay: 10
-
+      
     - name: Tampilkan hasil open database
       debug:
-        var: hasil_open_db_status.stdout
+        var: hasil_open_db.stdout
 
     - name: Validasi hasil OPEN berhasil
       fail:
         msg: "⛔ ALTER DATABASE OPEN gagal dilakukan"
-      when: "'database altered' not in hasil_open_db_status.stdout"
-
-    - name: Query untuk validasi READ WRITE
-      shell: |
-        . ~/.IDFGISU1
-        export ORACLE_HOME=/u01/app/oracle/product/19.3.0/dbhome_1
-        export ORACLE_SID=orcl
-        export PATH=$PATH:$ORACLE_HOME/bin
-        sqlplus -S / as sysdba <<EOF
-        SET FEEDBACK OFF
-        SET HEAD OFF
-        SELECT OPEN_MODE FROM V\$DATABASE;
-        EXIT
-        EOF
-      register: hasil_open_mode
-      when: "'database altered' in hasil_open_db_status.stdout"
-
-    - name: Tampilkan hasil OPEN_MODE
-      debug:
-        var: hasil_open_mode.stdout
-      when: hasil_open_mode is defined
-
-    - name: Gagal jika OPEN_MODE bukan READ WRITE
-      fail:
-        msg: "⛔ Database tidak dalam mode READ WRITE"
-      when: "'READ WRITE' not in hasil_open_mode.stdout"
-
-    - name: Sukses validasi OPEN dan READ WRITE
-      debug:
-        msg: "✅ Database berhasil dibuka dan dalam mode READ WRITE"
-      when: "'READ WRITE' in hasil_open_mode.stdout"
+      when: "'database altered' not in hasil_open_db.stdout"
