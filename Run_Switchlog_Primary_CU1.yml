@@ -12,7 +12,7 @@
 
 ###################
 - name: Sinkronisasi & Cek daftar Archive Log
-  hosts: "{{ primary_db_IDFGICU1 }}"
+  #hosts: "{{ primary_db_IDFGICU1 }}"
   tasks:
     - name: Source the bash profile and set environment variables
       shell: |
