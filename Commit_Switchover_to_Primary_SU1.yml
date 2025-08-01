@@ -13,6 +13,7 @@
 ########################
 - name: So SU1
   hosts: "{{ standby_db_IDFGISU1 }}"
+  gather_facts: no
   tasks:
     - name: Cek status database_role dan switchover_status
       shell: |  
