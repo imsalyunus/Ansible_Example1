@@ -1,0 +1,26 @@
+---
+- name: Cek env .IDFGSU1
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: "Tampilkan data dari PRIMARY"
+      debug:
+        msg: "{{ primary_db_IDFGISU1 }}"
+        
+    - name: "Tampilkan data dari STANDBY"
+      debug:
+        msg: "{{ standby_db_IDFGISU1 }}"
+
+    - name: "Cek apakah PRIMARY ada di UAT"
+      assert:
+        that:
+          - primary_db_IDFGISU1 == '192.168.1.222'
+        fail_msg: "Pengecekan gagal: UAT tidak PRIMARY"
+        success_msg: "Pengecekan berhasil: UAT adalah PRIMARY"
+
+    - name: "Cek apakah STANDBY ada di DEV"
+      assert:
+        that:
+          - standby_db_IDFGISU1 == '192.168.1.211'
+        fail_msg: "Pengecekan gagal: DEV tidak STANDBY"
+        success_msg: "Pengecekan berhasil: DEV adalah STANDBY"
