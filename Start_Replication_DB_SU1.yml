@@ -11,7 +11,8 @@
         msg: "Primary DB is set to: {{ primary_db_IDFGISU1 }}"
         
 ##############################
-- hosts: "{{ primary_db_IDFGISU1 }}"
+- name: SR SU1
+  hosts: "{{ primary_db_IDFGISU1 }}"
   gather_facts: no
   tasks:
     - name: Jalankan perintah START MRP - PRIMARY SU1
