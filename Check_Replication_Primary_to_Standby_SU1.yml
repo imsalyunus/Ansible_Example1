@@ -20,21 +20,20 @@
         source ~/.IDFGISU1
         export ORACLE_HOME=/u01/app/oracle/product/19.3.0/dbhome_1
         export ORACLE_SID=orcl
-        export PATH=$PATH:$ORACLE_HOME/bin        
-        sqlplus -s / as sysdba
-        alter system archive log current;
-        alter system archive log current;
-        alter system archive log current;
-      register: db_open
+        export PATH=$PATH:$ORACLE_HOME/bin
+        for i in {1..3}; do
+          echo "ALTER SYSTEM ARCHIVE LOG CURRENT;" | sqlplus -s / as sysdba
+        done
+      register: db_switchlog
+      ignore_errors: yes
 
-    - name: Check for success in database status
+    - name: Check SQL command output
       fail:
-        msg: "System could not be altered. Output: {{ db_open.stdout }}"
-      when: "'System altered' not in db_open.stdout"
+        msg: "SQL command did not execute successfully. Output: {{ db_switchlog.stdout }}"
+      when: "'System altered' not in db_switchlog.stdout"
 
-    - name: Display success message
+    - name: Display SQL command result
       debug:
-        msg: "System successfully altered.\n{{ db_open.stdout }}"
-      when: "'System altered' in db_open.stdout"
+        msg: "{{ db_switchlog.stdout_lines }}"
 
 
