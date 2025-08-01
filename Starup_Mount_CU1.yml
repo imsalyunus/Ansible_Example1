@@ -1,0 +1,53 @@
+---
+- hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: "Tampilkan data dari PRIMARY"
+      debug:
+        msg: "{{ primary_db_IDFGICU1 }}"
+
+    - name: "Debug nilai DEV pada env .IDFGICU1"
+      debug:
+        msg: "Primary DB is set to: {{ primary_db_IDFGICU1 }}"
+        
+##############################
+  hosts: {{ primary_db_IDFGICU1 }}
+  tasks:
+    - name: Jalankan startup mount
+      shell: |
+        . ~/.IDFGICU1
+        export ORACLE_HOME=/u01/app/oracle/product/19.3.0/dbhome_1
+        export ORACLE_SID=orcl
+        export PATH=$PATH:$ORACLE_HOME/bin        
+        sqlplus -S / as sysdba <<EOF
+        STARTUP MOUNT;
+        EXIT
+        EOF
+      register: hasil_startup
+
+    - name: Tampilkan hasil startup mount
+      debug:
+        var: hasil_startup.stdout_lines
+
+    - name: Tunggu 120 detik untuk memastikan database stabil
+      pause:
+        seconds: 120
+
+    - name: Cek status database
+      shell: |
+        . ~/.IDFGICU1
+        export ORACLE_HOME=/u01/app/oracle/product/19.3.0/dbhome_1
+        export ORACLE_SID=orcl
+        export PATH=$PATH:$ORACLE_HOME/bin        
+        sqlplus -S / as sysdba <<EOF
+        SET HEAD OFF
+        SET FEEDBACK OFF
+        SET PAGESIZE 0
+        SELECT name || '|' || open_mode || '|' || database_role FROM v\$database;
+        EXIT
+        EOF
+      register: hasil_status
+
+    - name: Tampilkan hasil status database
+      debug:
+        msg: "Status database: {{ hasil_status.stdout | trim }}"
